@@ -1,6 +1,5 @@
 class Timesheet < ApplicationRecord
   validates :date, :start_time, :end_time, presence: true
-  # validates :amount, :float
   validate :start_time_cannot_be_after_end_time
   validate :date_cannot_be_in_the_future
   validate :time_sheet_cannot_overlap
