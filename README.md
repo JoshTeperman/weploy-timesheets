@@ -6,6 +6,7 @@ time zones
 
 Postgres stores dates/times as UTC
 
+Timezones to consider:
 "Darwin" => "Australia/Darwin", 
 "Adelaide" => "Australia/Adelaide", 
 "Canberra" => "Australia/Melbourne", 
@@ -13,3 +14,6 @@ Postgres stores dates/times as UTC
 "Sydney" => "Australia/Sydney", 
 "Brisbane" => "Australia/Brisbane", 
 "Hobart" => "Australia/Hobart", 
+
+Assumptions:
+Jobs start and finish on the same day, or timesheets are only recorded for work that day

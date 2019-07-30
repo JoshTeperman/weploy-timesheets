@@ -1,6 +1,5 @@
 require 'rails_helper'
 require 'date'
-# FactoryBot.find_definitions
 
 RSpec.describe Timesheet, type: :model do
   describe 'Model validations' do    
@@ -55,7 +54,41 @@ RSpec.describe Timesheet, type: :model do
       expect(invalid_timesheet).to be_invalid
     end
 
-    it 'is not valid when date is in the future'
-    it 'is not valid when times overlap'
+    describe 'Date cannot be in the future' do
+      it 'is not valid when date is tomorrow' do
+        timesheet_for_tomorrow = build(:timesheet, date: Date.current + 1)
+        expect(timesheet_for_tomorrow).to be_invalid
+      end
+
+      it 'is valid when date is yesterday' do
+        timesheet_for_yesterday = build(:timesheet, date: Date.current - 1)
+        expect(timesheet_for_yesterday).to be_valid
+      end
+    end
+
+    describe 'Timesheets cannot overlap' do
+      it 'invalid when exactly the same timesheet' do
+        create(:timesheet)
+        overlapping_timesheet = build(:timesheet)
+        expect(overlapping_timesheet).to be_invalid
+      end
+
+      it 'invalid with one minute overlap' do
+        create(:timesheet)
+        overlapping_timesheet = build(:timesheet,
+          start_time: Time.zone.parse('15:59'),
+          end_time: Time.zone.parse('19:00')
+        )
+        expect(overlapping_timesheet).to be_invalid
+      end
+    end
+
+    it 'can handle different timezones'
+    it 'handles incorrect datatypes correctly'
+    it 'date can be string but has to be the right format'
+
+    # TODO: calculate amount
+    # TODO: get all timesheets
+    # TODO: display timesheet information correctly
   end
 end
