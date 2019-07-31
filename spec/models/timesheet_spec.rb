@@ -81,6 +81,13 @@ RSpec.describe Timesheet, type: :model do
         )
         expect(overlapping_timesheet).to be_invalid
       end
+
+      it 'is valid when the times are the same but date is different' do
+        create(:timesheet)
+        second_timesheet = build(:timesheet, date: mocks[:date] - 1)
+
+        expect(second_timesheet).to be_valid
+      end
     end
 
     it 'can handle different timezones'

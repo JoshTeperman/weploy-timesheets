@@ -22,7 +22,7 @@ class Timesheet < ApplicationRecord
     if start_time.present? && end_time.present?
       Timesheet.all.map do |timesheet|
         p timesheet.id == id
-        unless timesheet.id == id
+        unless timesheet.id == id || date != timesheet.date
           if overlaps?(timesheet)
             p 'overlaps'
             errors.add(:base, 'Timesheets cannot overlap')
