@@ -1,0 +1,12 @@
+<h1>Index Page</h1>
+
+<%= link_to 'Create a New Timesheet', new_timesheet_path %>
+<% if @timesheets.length == 0 %>
+  <h2>No Timesheets</h2>
+<% else %>
+  <% @timesheets.each do |timesheet| %>
+  <p><%= timesheet.start_time %></p>
+  <p><%= timesheet.end_time %></p>
+  <p><%= timesheet.amount %></p>
+  <% end %>
+<% end %>

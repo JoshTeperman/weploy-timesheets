@@ -1,0 +1,18 @@
+<h1>Create a New Timesheet</h1>
+
+<form action="<%= timesheets_path %>" method="POST">
+  <input type="hidden" value="<%= form_authenticity_token %>" name="authenticity_token">
+
+  <label for="name">Name</label>
+  <input type="text" name="name" id="id" />
+
+  <label for="genre">Genre</label>
+  <input type="text" name="genre" id="genre" />
+
+  <label for="explicit">Explicit?</label>
+  <input type="checkbox" name="explicit" id="explicit" />
+
+  <input type="submit" value="Create" />
+</form> 
+
+<%= link_to "< Back", :back %>

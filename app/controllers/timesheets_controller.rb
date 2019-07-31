@@ -8,6 +8,7 @@ class TimesheetsController < ApplicationController
   end
 
   def new
+    @timesheet = Timesheet.new
   end
 
   def create
@@ -22,8 +23,9 @@ class TimesheetsController < ApplicationController
     Timesheet.destroy(params[:id])
   end
 
-  private 
-    def timesheet_params
-      params.require(:timesheet).permit(:date, :start_time, :end_time, :amount)
-    end
+  private
+
+  def timesheet_params
+    params.require(:timesheet).permit(:date, :start_time, :end_time, :amount)
+  end
 end
