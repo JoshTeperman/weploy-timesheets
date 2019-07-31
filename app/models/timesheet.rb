@@ -23,7 +23,6 @@ class Timesheet < ApplicationRecord
       Timesheet.all.map do |timesheet|
         p timesheet.id == id
         unless timesheet.id == id
-          # errors.add(:timesheet, 'cannot overlap') if overlaps?(timesheet)
           if overlaps?(timesheet)
             p 'overlaps'
             errors.add(:base, 'Timesheets cannot overlap')
@@ -38,11 +37,17 @@ class Timesheet < ApplicationRecord
   def overlaps?(other)
     p 'checking overlap'
     a_start = start_time.seconds_since_midnight
+    p a_start
     a_end = end_time.seconds_since_midnight
+    p a_end
     b_start = other.start_time.seconds_since_midnight
+    p b_start
     b_end = other.end_time.seconds_since_midnight
+    p b_end
 
+    p (a_start...a_end).overlaps?(b_start...b_end)
     if (a_start...a_end).overlaps?(b_start...b_end)
+      p 'true'
       return true
     end
   end
