@@ -12,7 +12,29 @@ class TimesheetsController < ApplicationController
   end
 
   def create
+    # begin
+    #   @timesheet = Timesheet.new(timesheet_params)
+    #   if @timesheet.save
+    #     p 'saved'
+    #     redirect_to :index
+    #   else
+    #     p 'couldnt save'
+    #     @timesheet.errors.full_messages.each do |message|
+    #       flash[:error] = message
+    #     end
+    #     render :new
+    #   end
+    # rescue => e
+    #   p e.message
+    # end
     @timesheet = Timesheet.create(timesheet_params)
+    if @timesheet.valid?
+      flash[:success] = 'created a new timesheet'
+      redirect_to :index
+    else
+      flash[:errors] = @timesheet.errors.full_messages
+      redirect_to new_timesheet_path
+    end
   end
 
   def update
@@ -26,6 +48,6 @@ class TimesheetsController < ApplicationController
   private
 
   def timesheet_params
-    params.require(:timesheet).permit(:date, :start_time, :end_time, :amount)
+    params.permit(:date, :start_time, :end_time)
   end
 end

@@ -1,18 +1,21 @@
-<h1>Create a New Timesheet</h1>
 
-<form action="<%= timesheets_path %>" method="POST">
-  <input type="hidden" value="<%= form_authenticity_token %>" name="authenticity_token">
 
-  <label for="name">Name</label>
-  <input type="text" name="name" id="id" />
+<div class="page-container">
+  <h1>Create a New Timesheet</h1>
+  <form class="weploy-form" action="<%= create_timesheet_path %>" method="POST">
+    <input type="hidden" value="<%= form_authenticity_token %>" name="authenticity_token">
+    
+    <label for="date">Date</label>
+    <input type="date" name="date" id="date">
 
-  <label for="genre">Genre</label>
-  <input type="text" name="genre" id="genre" />
+    <label for="start_time">Start Time</label>
+    <input type="time" name="start_time" id="start_time" placeholder="Start Time" /> 
 
-  <label for="explicit">Explicit?</label>
-  <input type="checkbox" name="explicit" id="explicit" />
+    <label for="end_time">End Time</label>
+    <input type="time" name="end_time" id="end_time" />
 
-  <input type="submit" value="Create" />
-</form> 
+    <input class="create-button" type="submit" value="Create" />
+  </form> 
 
-<%= link_to "< Back", :back %>
+  <%= link_to "Back to Timesheets", {controller: 'timesheets', action: 'index'}, class: 'weploy-button green' %>
+</div>
