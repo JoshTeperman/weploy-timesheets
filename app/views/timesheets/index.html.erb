@@ -1,0 +1,25 @@
+
+
+<div class="page-container">
+  <h1>My Timesheets</h1>
+  <%= link_to 'Create a New Timesheet', {controller: 'timesheets', action: 'new'}, class: 'weploy-button green' %>
+
+    <div class="timesheets-table">
+      <table>
+          <tr>
+            <th>Date</th>
+            <th>Start Time</th>
+            <th>End Time</th>
+            <th>Amount</th>
+          </tr>
+          <% @timesheets.each do |timesheet| %>
+            <tr>
+              <td><%= timesheet.date %></td>
+              <td><%= timesheet.start_time %></td>
+              <td><%= timesheet.end_time %></td>
+              <td><%= timesheet.amount %></td>
+            </tr>
+          <% end %>
+      </table>
+    </div>
+</div>
