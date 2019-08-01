@@ -4,6 +4,8 @@ class Timesheet < ApplicationRecord
   validate :date_cannot_be_in_the_future
   validate :time_sheet_cannot_overlap
 
+  after_create :calculate_amount
+
   private
 
   def start_time_cannot_be_after_end_time
@@ -40,5 +42,9 @@ class Timesheet < ApplicationRecord
     if (a_start...a_end).overlaps?(b_start...b_end)
       return true
     end
+  end
+
+  def calculate_amount
+    self.amount = 264
   end
 end

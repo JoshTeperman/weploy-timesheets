@@ -3,7 +3,7 @@ require_relative '../../app/helpers/timesheets_helper'
 require 'date'
 
 RSpec.describe Timesheet, type: :model do
-  describe 'Model validations' do    
+  describe 'Timesheet Model' do    
     before do
       Timesheet.destroy_all
     end
@@ -15,6 +15,22 @@ RSpec.describe Timesheet, type: :model do
     let(:mocks) do
       attributes_for(:timesheet)
     end
+
+    it 'has a date' do
+      expect(valid_timesheet.date.present?).to eq(true)
+    end
+
+    it 'has a start_time' do
+      expect(valid_timesheet.start_time.present?).to eq(true)
+    end
+
+    it 'has an end_time' do
+      expect(valid_timesheet.end_time.present?).to eq(true)
+    end
+
+    # it 'has an amount' do
+    #   expect(valid_timesheet.amount.present?).to eq(true)
+    # end
 
     it 'is invalid when intialized without attributes' do
       expect(Timesheet.new).to be_invalid
@@ -89,23 +105,72 @@ RSpec.describe Timesheet, type: :model do
 
         expect(second_timesheet).to be_valid
       end
+    end
+  end
 
-      describe 'Calculating Amount' do
-        describe 'method: calculate_amount' do
-          it 'calculates Monday Wednesday Friday for one hourly rate'
-          it 'calculates Monday Wednesday Friday for two hourly rates'
-          it 'calculates Tuesday Thursday for one hourly rate'
-          it 'calculates Tuesday Thursday for two hourly rates'
-        end
-      end
+  describe 'Calculating Amount' do
+    before do
+      Timesheet.destroy_all
     end
 
-    
-    it 'can handle different timezones'
-    it 'handles incorrect datatypes correctly'
-    it 'date can be string but has to be the right format'
+    let(:monday) { Date.new(2019, 7, 1) }
+    let(:tuesday) { Date.new(2019, 7, 2) }
+    let(:saturday) { Date.new(2019, 7, 6) }
 
+    describe 'Monday Wednesday Friday' do
+      # Rates:
+      # 07:00 - 19:00 -> $22 per hour
+      # other times   -> $33 per hour
+      let(:min_rate) { 22 }
+      let(:max_rate) { 33 }
+
+      let(:min_rate_timesheet) do
+        build(:timesheet,
+          date: monday,
+          start_time: Time.zone.parse('7:00'),
+          end_time: Time.zone.parse('19:00')
+        )
+      end
+
+      let(:max_rate_timesheet) do
+        build(:timesheet,
+          date: monday,
+          start_time: Time.zone.parse('1:00'),
+          end_time: Time.zone.parse('5:00')
+        )
+      end
+
+      let(:both_rates_timesheet) do
+        build(:timesheet,
+          date: monday,
+          start_time: Time.zone.parse('1:00'),
+          end_time: Time.zone.parse('19:00')
+        )
+      end
+
+      it 'calculates when only min rate' do
+        timesheet = create(:timesheet)
+        p timesheet
+        total_hours = (19 - 7)
+        total_expected_amount = total_hours * min_rate
+        expect(min_rate_timesheet.amount).to eq(total_expected_amount)
+      end
+
+      it 'calculates when only max rate'
+      it 'calculates when both min and max rates'
+      it 'sanity check: amount for both_rates test should equal combined amounts for min_only and max_only tests'
+    end
+
+    describe 'Tuesday Thursday' do
+      it 'calculates when only $25 hourly rate'
+      it 'calculates when only $35 hourly rate'
+      it 'calculates when both $25 and $35 hourly rate'
+    end
   end
+
+  it 'can handle different timezones'
+  it 'handles incorrect datatypes correctly'
+  it 'date can be string but has to be the right format'
 end
 
 # TODO: calculate amount
