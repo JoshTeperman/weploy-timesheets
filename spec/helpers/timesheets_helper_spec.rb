@@ -1,4 +1,5 @@
 require 'rails_helper'
+require 'date'
 
 # Specs in this file have access to a helper object that includes
 # the TimesheetsHelper. For example:
@@ -11,5 +12,7 @@ require 'rails_helper'
 #   end
 # end
 RSpec.describe TimesheetsHelper, type: :helper do
-  pending "add some examples to (or delete) #{__FILE__}"
+  it 'fetch_day method: ' do
+    expect(fetch_day(Date.new)).to eq('Monday')
+  end
 end

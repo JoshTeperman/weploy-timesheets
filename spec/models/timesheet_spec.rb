@@ -1,4 +1,5 @@
 require 'rails_helper'
+require_relative '../../app/helpers/timesheets_helper'
 require 'date'
 
 RSpec.describe Timesheet, type: :model do
@@ -88,14 +89,41 @@ RSpec.describe Timesheet, type: :model do
 
         expect(second_timesheet).to be_valid
       end
+
+      describe 'Calculating Amount' do
+        describe 'method: calculate_timesheet_amount' do
+
+
+          it 'method: fetch_day fetches the correct day' do
+            # expect(fetch_day(monday_timesheet)).to eq('Monday')
+            # expect(friday_timesheet.fetch_day).to eq('Friday')
+          end
+        end
+        describe 'method: calculate_amount' do
+          it 'calculates Monday Wednesday Friday for one hourly rate'
+          it 'calculates Monday Wednesday Friday for two hourly rates'
+          it 'calculates Tuesday Thursday for one hourly rate'
+          it 'calculates Tuesday Thursday for two hourly rates'
+        end
+      end
     end
 
+    
     it 'can handle different timezones'
     it 'handles incorrect datatypes correctly'
     it 'date can be string but has to be the right format'
 
-    # TODO: calculate amount
-    # TODO: get all timesheets
-    # TODO: display timesheet information correctly
   end
 end
+
+# TODO: calculate amount
+# TODO: allow user to fix errors and try again (without page refreshing) - take params and render with params
+# TODO: display all timesheets as expected
+# TODO: display date in readable format
+# TODO: display start_time and end_time in readable format
+
+# ! additional optional CRUD:
+# TODO: get all timesheets
+# TODO: get single timesheet
+# TODO: edit timesheet
+# TODO: delete timesheet

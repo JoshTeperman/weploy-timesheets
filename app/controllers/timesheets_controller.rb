@@ -47,6 +47,8 @@ class TimesheetsController < ApplicationController
 
   private
 
+  
+
   def timesheet_params
     params.permit(:date, :start_time, :end_time)
   end
