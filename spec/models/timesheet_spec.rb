@@ -91,14 +91,6 @@ RSpec.describe Timesheet, type: :model do
       end
 
       describe 'Calculating Amount' do
-        describe 'method: calculate_timesheet_amount' do
-
-
-          it 'method: fetch_day fetches the correct day' do
-            # expect(fetch_day(monday_timesheet)).to eq('Monday')
-            # expect(friday_timesheet.fetch_day).to eq('Friday')
-          end
-        end
         describe 'method: calculate_amount' do
           it 'calculates Monday Wednesday Friday for one hourly rate'
           it 'calculates Monday Wednesday Friday for two hourly rates'

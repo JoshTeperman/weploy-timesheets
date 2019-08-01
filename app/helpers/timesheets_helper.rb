@@ -1,7 +1,5 @@
 module TimesheetsHelper
-  def fetch_day
-    # return date
-    # expect(monday_timesheet.date.strftime('%A')).to eq('Monday')
-    # expect(friday_timesheet.date.strftime('%A')).to eq('Friday')
+  def fetch_day(timesheet)
+    timesheet.date.strftime('%A')
   end
 end
