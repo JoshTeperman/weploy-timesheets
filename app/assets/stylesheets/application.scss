@@ -14,6 +14,7 @@
  
 @import 'bootstrap';
 @import './styles/new.scss';
+@import './styles/index.scss';
 
 body {
   font-family: 'Assistant', sans-serif;
@@ -27,11 +28,19 @@ body {
   }
 }
 
-.alert errors {
+.errors, .warning {
   margin: 2px;
   padding: 2px;
   width: 80%;
   background: var(--light-pink);
+  color: var(--myblack);
+}
+
+.success {
+  margin: 2px;
+  padding: 2px;
+  width: 80%;
+  background: var(--light-green);
   color: var(--myblack);
 }
 
