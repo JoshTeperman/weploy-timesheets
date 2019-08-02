@@ -45,6 +45,7 @@ class Timesheet < ApplicationRecord
   end
 
   def calculate_amount
+    p 'calculate amount method being called'
     day = ApplicationController.helpers.fetch_day(self)
     if %w[Monday Wednesday Friday].include?(day)
       min_rate = 22.0
