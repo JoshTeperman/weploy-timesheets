@@ -3,18 +3,19 @@ require_relative '../../app/helpers/timesheets_helper'
 require 'date'
 
 RSpec.describe Timesheet, type: :model do
+  before do
+    Timesheet.destroy_all
+  end
+
+  let(:valid_timesheet) do
+    create(:timesheet)
+  end
+
+  let(:mocks) do
+    attributes_for(:timesheet)
+  end
+
   describe 'Timesheet Model' do    
-    before do
-      Timesheet.destroy_all
-    end
-
-    let(:valid_timesheet) do
-      build(:timesheet)
-    end
-
-    let(:mocks) do
-      attributes_for(:timesheet)
-    end
 
     it 'has a date' do
       expect(valid_timesheet.date.present?).to eq(true)
@@ -28,9 +29,13 @@ RSpec.describe Timesheet, type: :model do
       expect(valid_timesheet.end_time.present?).to eq(true)
     end
 
-    # it 'has an amount' do
-    #   expect(valid_timesheet.amount.present?).to eq(true)
-    # end
+    it 'has an amount' do
+      expect(valid_timesheet.amount.present?).to eq(true)
+    end
+
+    it 'amount is a Float' do
+      expect(valid_timesheet.amount.class).to eq(Float)
+    end
 
     it 'is invalid when intialized without attributes' do
       expect(Timesheet.new).to be_invalid
@@ -109,10 +114,6 @@ RSpec.describe Timesheet, type: :model do
   end
 
   describe 'Calculating Amount' do
-    before do
-      Timesheet.destroy_all
-    end
-
     let(:monday) { Date.new(2019, 7, 1) }
     let(:tuesday) { Date.new(2019, 7, 2) }
     let(:saturday) { Date.new(2019, 7, 6) }
@@ -125,7 +126,7 @@ RSpec.describe Timesheet, type: :model do
       let(:max_rate) { 33 }
 
       let(:min_rate_timesheet) do
-        build(:timesheet,
+        create(:timesheet,
           date: monday,
           start_time: Time.zone.parse('7:00'),
           end_time: Time.zone.parse('19:00')
@@ -133,7 +134,7 @@ RSpec.describe Timesheet, type: :model do
       end
 
       let(:max_rate_timesheet) do
-        build(:timesheet,
+        create(:timesheet,
           date: monday,
           start_time: Time.zone.parse('1:00'),
           end_time: Time.zone.parse('5:00')
@@ -141,7 +142,7 @@ RSpec.describe Timesheet, type: :model do
       end
 
       let(:both_rates_timesheet) do
-        build(:timesheet,
+        create(:timesheet,
           date: monday,
           start_time: Time.zone.parse('1:00'),
           end_time: Time.zone.parse('19:00')
@@ -149,16 +150,23 @@ RSpec.describe Timesheet, type: :model do
       end
 
       it 'calculates when only min rate' do
-        timesheet = create(:timesheet)
-        p timesheet
         total_hours = (19 - 7)
         total_expected_amount = total_hours * min_rate
         expect(min_rate_timesheet.amount).to eq(total_expected_amount)
       end
 
-      it 'calculates when only max rate'
-      it 'calculates when both min and max rates'
-      it 'sanity check: amount for both_rates test should equal combined amounts for min_only and max_only tests'
+      it 'calculates when only max rate' do
+        total_hours = (5 - 1)
+        total_expected_amount = total_hours * max_rate
+        expect(max_rate_timesheet.amount).to eq(total_expected_amount)
+      end
+
+      it 'calculates when both min and max rates' do
+        total_min_hours = (19 - 7)
+        total_max_hours = (5 - 1)
+        total_expected_amount = (total_max_hours * max_rate) + (total_min_hours * min_rate)
+        expect(both_rates_timesheet.amount).to eq(total_expected_amount)
+      end
     end
 
     describe 'Tuesday Thursday' do
