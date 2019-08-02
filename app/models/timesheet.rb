@@ -69,6 +69,7 @@ class Timesheet < ApplicationRecord
       total_max_rate_seconds = timesheet_set.difference(min_rate_set).length
       max_rate_amount = (total_max_rate_seconds * max_rate) / seconds_in_an_hour
 
+      # binding.pry
       self.amount = min_rate_amount + max_rate_amount
     end
   end

@@ -1,6 +1,7 @@
 require 'rails_helper'
 require_relative '../../app/helpers/timesheets_helper'
 require 'date'
+require 'pry'
 
 RSpec.describe Timesheet, type: :model do
   before do
@@ -122,8 +123,8 @@ RSpec.describe Timesheet, type: :model do
       # Rates:
       # 07:00 - 19:00 -> $22 per hour
       # other times   -> $33 per hour
-      let(:min_rate) { 22 }
-      let(:max_rate) { 33 }
+      let(:min_rate) { 22.0 }
+      let(:max_rate) { 33.0 }
 
       let(:min_rate_timesheet) do
         create(:timesheet,
@@ -152,19 +153,23 @@ RSpec.describe Timesheet, type: :model do
       it 'calculates when only min rate' do
         total_hours = (19 - 7)
         total_expected_amount = total_hours * min_rate
+        p total_expected_amount
         expect(min_rate_timesheet.amount).to eq(total_expected_amount)
       end
 
       it 'calculates when only max rate' do
         total_hours = (5 - 1)
         total_expected_amount = total_hours * max_rate
+        p total_expected_amount
         expect(max_rate_timesheet.amount).to eq(total_expected_amount)
       end
 
-      it 'calculates when both min and max rates' do
+      it 'calculates when both min and max rates', :focus => true do
         total_min_hours = (19 - 7)
-        total_max_hours = (5 - 1)
+        total_max_hours = (7 - 1)
+
         total_expected_amount = (total_max_hours * max_rate) + (total_min_hours * min_rate)
+        # p total_expected_amount
         expect(both_rates_timesheet.amount).to eq(total_expected_amount)
       end
     end
