@@ -1,18 +1,41 @@
 require 'rails_helper'
+require_relative '../../app/helpers/timesheets_helper'
 require 'date'
+require 'pry'
 
 RSpec.describe Timesheet, type: :model do
-  describe 'Model validations' do    
-    before do
-      Timesheet.destroy_all
+  before do
+    Timesheet.destroy_all
+  end
+
+  let(:valid_timesheet) do
+    create(:timesheet)
+  end
+
+  let(:mocks) do
+    attributes_for(:timesheet)
+  end
+
+  describe 'Timesheet Model' do    
+
+    it 'has a date' do
+      expect(valid_timesheet.date.present?).to eq(true)
     end
 
-    let(:valid_timesheet) do
-      build(:timesheet)
+    it 'has a start_time' do
+      expect(valid_timesheet.start_time.present?).to eq(true)
     end
 
-    let(:mocks) do
-      attributes_for(:timesheet)
+    it 'has an end_time' do
+      expect(valid_timesheet.end_time.present?).to eq(true)
+    end
+
+    it 'has an amount' do
+      expect(valid_timesheet.amount.present?).to eq(true)
+    end
+
+    it 'amount is a Float' do
+      expect(valid_timesheet.amount.class).to eq(Float)
     end
 
     it 'is invalid when intialized without attributes' do
@@ -89,13 +112,115 @@ RSpec.describe Timesheet, type: :model do
         expect(second_timesheet).to be_valid
       end
     end
-
-    it 'can handle different timezones'
-    it 'handles incorrect datatypes correctly'
-    it 'date can be string but has to be the right format'
-
-    # TODO: calculate amount
-    # TODO: get all timesheets
-    # TODO: display timesheet information correctly
   end
+
+  describe 'Calculating Amount' do
+    let(:monday) { Date.new(2019, 7, 1) }
+    let(:tuesday) { Date.new(2019, 7, 2) }
+    let(:wednesday) { Date.new(2019, 7, 3) }
+    let(:thursday) { Date.new(2019, 7, 4) }
+    let(:friday) { Date.new(2019, 7, 5) }
+    let(:saturday) { Date.new(2019, 7, 6) }
+    let(:sunday) { Date.new(2019, 7, 7) }
+
+    describe 'Monday Wednesday Friday' do
+      # Rates:
+      # 07:00 - 19:00 -> $22 per hour
+      # other times   -> $33 per hour
+      let(:min_rate) { 22.0 }
+      let(:max_rate) { 33.0 }
+      let(:seconds_in_an_hour) { 60 * 60 }
+
+      let(:min_rate_timesheet) do
+        create(:timesheet,
+          date: monday,
+          start_time: Time.zone.parse('7:00'),
+          end_time: Time.zone.parse('19:00')
+        )
+      end
+
+      let(:max_rate_timesheet) do
+        create(:timesheet,
+          date: monday,
+          start_time: Time.zone.parse('1:00'),
+          end_time: Time.zone.parse('5:00')
+        )
+      end
+
+      let(:both_rates_timesheet) do
+        create(:timesheet,
+          date: monday,
+          start_time: Time.zone.parse('1:00'),
+          end_time: Time.zone.parse('19:00')
+        )
+      end
+
+      it 'calculates when only min rate' do
+        total_hours = (19 - 7)
+        total_expected_amount = total_hours * min_rate
+        expect(min_rate_timesheet.amount).to eq(total_expected_amount)
+      end
+
+      it 'calculates when only max rate' do
+        total_hours = (5 - 1)
+        total_expected_amount = total_hours * max_rate
+        expect(max_rate_timesheet.amount).to eq(total_expected_amount)
+      end
+
+      it 'calculates when both min and max rates' do
+        total_min_hours = (19 - 7)
+        total_max_hours = (7 - 1)
+        total_expected_amount = (total_max_hours * max_rate) + (total_min_hours * min_rate)
+        expect(both_rates_timesheet.amount).to eq(total_expected_amount)
+      end
+
+      it '7:00 to 12:30 on a Monday' do
+        start_time = Time.zone.parse('7:00')
+        end_time = Time.zone.parse('12:30')
+        timesheet = create(:timesheet, date: monday, start_time: start_time, end_time: end_time)
+
+        total_min_hours = (12.5 - 7)
+        total_expected_amount = (total_min_hours * min_rate)
+
+        expect(timesheet.amount).to eq(total_expected_amount)
+      end
+
+      it '7:23 to 21:02 on a Wednesday' do
+        start_time = Time.zone.parse('7:23')
+        end_time = Time.zone.parse('21:02')
+        min_rate_start = Time.zone.parse('7:00')
+        min_rate_end = Time.zone.parse('19:00')
+        timesheet = create(:timesheet, date: wednesday, start_time: start_time, end_time: end_time)
+
+        total_max_seconds = end_time - min_rate_end
+        total_min_seconds = min_rate_end - start_time
+        total_min_amount = (total_min_seconds * min_rate) / seconds_in_an_hour
+        total_max_amount = (total_max_seconds * max_rate) / seconds_in_an_hour
+        total_expected_amount = (total_min_amount + total_max_amount)
+        
+        expect(timesheet.amount).to eq(total_expected_amount)
+      end
+    end
+
+    describe 'Tuesday Thursday' do
+      it 'calculates when only $25 hourly rate'
+      it 'calculates when only $35 hourly rate'
+      it 'calculates when both $25 and $35 hourly rate'
+    end
+  end
+
+  it 'can handle different timezones'
+  it 'handles incorrect datatypes correctly'
+  it 'date can be string but has to be the right format'
 end
+
+# TODO: allow user to fix errors and try again (without page refreshing) - take params and render with params
+# TODO: display all timesheets as expected
+# TODO: display date in readable format
+# TODO: display start_time and end_time in readable format
+
+# ! additional optional CRUD:
+# TODO: get all timesheets
+# TODO: get single timesheet
+# TODO: edit timesheet
+# TODO: delete timesheet

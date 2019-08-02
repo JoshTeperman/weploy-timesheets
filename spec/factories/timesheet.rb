@@ -5,3 +5,4 @@ FactoryBot.define do
     end_time { Time.zone.parse('18:00') }
   end
 end
+

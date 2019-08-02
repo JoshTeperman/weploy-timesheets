@@ -29,6 +29,7 @@ class TimesheetsController < ApplicationController
     # end
     @timesheet = Timesheet.create(timesheet_params)
     if @timesheet.valid?
+      p @timesheet
       flash[:success] = 'created a new timesheet'
       redirect_to :index
     else
@@ -46,6 +47,8 @@ class TimesheetsController < ApplicationController
   end
 
   private
+
+  
 
   def timesheet_params
     params.permit(:date, :start_time, :end_time)
