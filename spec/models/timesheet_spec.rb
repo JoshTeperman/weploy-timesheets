@@ -197,7 +197,7 @@ RSpec.describe Timesheet, type: :model do
         total_min_amount = (total_min_seconds * min_rate) / seconds_in_an_hour
         total_max_amount = (total_max_seconds * max_rate) / seconds_in_an_hour
         total_expected_amount = (total_min_amount + total_max_amount)
-        
+
         expect(timesheet.amount).to eq(total_expected_amount)
       end
     end
@@ -216,6 +216,7 @@ end
 
 # TODO: allow user to fix errors and try again (without page refreshing) - take params and render with params
 # TODO: display all timesheets as expected
+# TODO: how to test views render as expected: https://relishapp.com/rspec/rspec-rails/v/2-0/docs/view-specs/view-spec
 # TODO: display date in readable format
 # TODO: display start_time and end_time in readable format
 
