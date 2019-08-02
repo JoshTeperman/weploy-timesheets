@@ -51,20 +51,25 @@ class Timesheet < ApplicationRecord
       max_rate = 33.0
       min_rate_start = Time.zone.parse('7:00').seconds_since_midnight.to_i
       min_rate_end = Time.zone.parse('19:00').seconds_since_midnight.to_i
-      
-      # create_min_rate_set
-      min_rate_set = Set.new(min_rate_start...min_rate_end)
-      
-      # create timesheet Set:
       start_time_seconds = start_time.seconds_since_midnight.to_i
       end_time_seconds = end_time.seconds_since_midnight.to_i
+
+      # create_min_rate_set
+      min_rate_set = Set.new(min_rate_start...min_rate_end)
+
+      # create timesheet Set:
       timesheet_set = Set.new(start_time_seconds...end_time_seconds)
-      
+
+      # this should be one method
+      seconds_in_an_hour = 60 * 60
       total_min_rate_seconds = timesheet_set.intersection(min_rate_set).length
-      min_rate_amount = (total_min_rate_seconds * min_rate) / 3600
-      # binding.pry
-      
-      self.amount = min_rate_amount
+      min_rate_amount = (total_min_rate_seconds * min_rate) / seconds_in_an_hour
+
+      # calculate max_rate seconds
+      total_max_rate_seconds = timesheet_set.difference(min_rate_set).length
+      max_rate_amount = (total_max_rate_seconds * max_rate) / seconds_in_an_hour
+
+      self.amount = min_rate_amount + max_rate_amount
     end
   end
 end
