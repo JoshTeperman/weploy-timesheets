@@ -112,21 +112,33 @@ Also works fairly well assuming that rates are configured based on weekday. You 
 
 https://tosbourn.com/set-intersection-in-ruby/
 
+TESTING:
+Wasn't sure whether I should be using constants to help define my tests. I defined min_rate, max_rate and start & end_times in my tests to calculate the expected answer, then let my actual code produce results that I could test. I thought this would help me test the code itself rather than risk false positives from errors being replicated in my tests. However at the same time It led to a lot of additional repeated code, and changing constants like RateSchema instances would require a lot of changes in my tests as well. 
 
 EXTENDING:
-
-extract Rates / Days of the week into a Helper Class
-.. you should be able to create a new schema for rates for a particular day of the week:
-eg: 
-new Rate( 
-  day: 'Monday',
-  min_rate: {
-    start_time: Times.zone.parse('7:00')
-    end_time: Times.zone.parse('19:00')
-  }  
-)
-.. or something
+Error Handling:
+- minimum timesheet of 5 minutes?
+- handle overlapping days
 
 add option for different Australian timezones
 - drop down
 - default timezone set to Melbourne in config, but should be able to override it depending on input from user.
+
+Incorporating Rubocop
+Rails scaffolded files throw a bunch of Rubocop offenses. Too much noise, no signal. 
+Need to learn more about how to configure Rubocop work with Rails.
+
+# TODO: it 'can handle different timezones'
+# TODO: it 'handles incorrect datatypes correctly'
+
+# TODO: allow user to fix errors and try again (without page refreshing) - take params and render with params
+# TODO: display all timesheets as expected
+# TODO: how to test views render as expected: https://relishapp.com/rspec/rspec-rails/v/2-0/docs/view-specs/view-spec
+# TODO: display date in readable format
+# TODO: display start_time and end_time in readable format
+
+# ! additional optional CRUD:
+# TODO: get all timesheets
+# TODO: get single timesheet
+# TODO: edit timesheet
+# TODO: delete timesheet

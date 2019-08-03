@@ -8,7 +8,9 @@ class TimesheetsController < ApplicationController
   end
 
   def new
-    @timesheet = Timesheet.new
+    @timesheet = params[:cache] || Timesheet.new
+    p '+====================================='
+    p @timesheet
   end
 
   def create
@@ -29,12 +31,12 @@ class TimesheetsController < ApplicationController
     # end
     @timesheet = Timesheet.create(timesheet_params)
     if @timesheet.valid?
-      p @timesheet
       flash[:success] = 'created a new timesheet'
       redirect_to :index
     else
       flash[:errors] = @timesheet.errors.full_messages
-      redirect_to new_timesheet_path
+      cache = JSON.parse(params[:cache]) unless params[:cache].empty?
+      redirect_to new_timesheet_path(cache: cache)
     end
   end
 
@@ -47,8 +49,6 @@ class TimesheetsController < ApplicationController
   end
 
   private
-
-  
 
   def timesheet_params
     params.permit(:date, :start_time, :end_time)

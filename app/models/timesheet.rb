@@ -32,7 +32,7 @@ class Timesheet < ApplicationRecord
       next if date != timesheet.date
 
       errors.add(:base, 'Timesheets cannot overlap') if overlaps?(timesheet)
-        # return self.errors
+      # return self.errors
     end
   end
 
@@ -47,19 +47,15 @@ class Timesheet < ApplicationRecord
 
   def calculate_timesheet_amount
     rate_schema = select_rate_schema_for_timesheet
-    base_rate_range = create_set_from_time_range(
+    base_rate_set = create_set_from_time_range(
       rate_schema.start_time,
       rate_schema.end_time
     )
-    timesheet_range = create_set_from_time_range(
+    timesheet_set = create_set_from_time_range(
       start_time,
       end_time
     )
-    self.amount = total_amount_calculator(
-      base_rate_range,
-      timesheet_range,
-      rate_schema
-    )
+    self.amount = amount_calculator(base_rate_set, timesheet_set, rate_schema)
   end
 
   def select_rate_schema_for_timesheet
@@ -79,11 +75,13 @@ class Timesheet < ApplicationRecord
   end
 
   def calculate_overtime_salary(base_rate_range, timesheet_range, overtime_rate)
+    return 0 if overtime_rate.nil?
+
     total_seconds = timesheet_range.difference(base_rate_range).length
     (total_seconds * overtime_rate) / SECONDS_IN_AN_HOUR
   end
 
-  def total_amount_calculator(base_rate_range, timesheet_range, rate_schema)
+  def amount_calculator(base_rate_range, timesheet_range, rate_schema)
     base_salary = calculate_base_salary(
       base_rate_range,
       timesheet_range,
