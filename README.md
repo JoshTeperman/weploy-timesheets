@@ -107,6 +107,9 @@ cons:
 A little more obscure, not as easy to understand what's going on at first glance
 Not sure of the performance cost of rang -> array -> set conversion, Set class methods (.length on a Set, for example)
 
+Rate class with base_rate and overtime_rate works fairly well for base/overtime pairs, but would need to be reconfigured should there be more than two rates for a given day.
+Also works fairly well assuming that rates are configured based on weekday. You could theoretically create a new rule for a one-off day (ie a holiday / Christmas etc) by saying if timesheet.date = '2019/12/26' then rate = Rate.new().
+
 https://tosbourn.com/set-intersection-in-ruby/
 
 
@@ -123,3 +126,7 @@ new Rate(
   }  
 )
 .. or something
+
+add option for different Australian timezones
+- drop down
+- default timezone set to Melbourne in config, but should be able to override it depending on input from user.
