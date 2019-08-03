@@ -75,6 +75,8 @@ class Timesheet < ApplicationRecord
   end
 
   def calculate_overtime_salary(base_rate_range, timesheet_range, overtime_rate)
+    return 0 if overtime_rate.nil?
+
     total_seconds = timesheet_range.difference(base_rate_range).length
     (total_seconds * overtime_rate) / SECONDS_IN_AN_HOUR
   end

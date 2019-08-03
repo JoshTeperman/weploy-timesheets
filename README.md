@@ -116,18 +116,9 @@ TESTING:
 Wasn't sure whether I should be using constants to help define my tests. I defined min_rate, max_rate and start & end_times in my tests to calculate the expected answer, then let my actual code produce results that I could test. I thought this would help me test the code itself rather than risk false positives from errors being replicated in my tests. However at the same time It led to a lot of additional repeated code, and changing constants like RateSchema instances would require a lot of changes in my tests as well. 
 
 EXTENDING:
-
-extract Rates / Days of the week into a Helper Class
-.. you should be able to create a new schema for rates for a particular day of the week:
-eg: 
-new Rate( 
-  day: 'Monday',
-  min_rate: {
-    start_time: Times.zone.parse('7:00')
-    end_time: Times.zone.parse('19:00')
-  }  
-)
-.. or something
+Error Handling:
+- minimum timesheet of 5 minutes?
+- handle overlapping days
 
 add option for different Australian timezones
 - drop down
