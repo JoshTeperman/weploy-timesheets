@@ -6,3 +6,15 @@
   align-items: center;
   justify-content: center;
 }
+
+#timesheet-table {
+  min-width: 500px;
+  th {
+    padding: 3px 15px;
+    font-size: 2rem;
+  }
+  td {
+    padding: 3px 15px;
+    font-size: 1.6rem
+  }
+}

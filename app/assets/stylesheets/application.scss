@@ -20,36 +20,44 @@ body {
   font-family: 'Assistant', sans-serif;
   margin: 0px;
   padding: 0px;
-  background: var(--mywhite);
-  
-  a {
-    color: var(--purple);
-    text-decoration: none;
-  }
+  background: var(--mywhite);  
+  font-size: 10px
+}
+
+a {
+  color: var(--purple);
+}
+
+a:hover {
+  text-decoration: none;
 }
 
 .errors, .warning {
-  margin: 2px;
-  padding: 2px;
+  margin: 0.2rem;
+  padding: 0.2rem;
   width: 80%;
   background: var(--light-pink);
   color: var(--myblack);
 }
 
 .success {
-  margin: 2px;
-  padding: 2px;
+  margin: 0.2rem;
+  padding: 0.2rem;
   width: 80%;
   background: var(--light-green);
   color: var(--myblack);
 }
 
-.weploy-button green {
+.weploy-button-green {
   background: var(--green);
   color: var(--mywhite);
-  border-radius: 30px;
+  border-radius: 3rem;
   padding: 3px 15px;
-  font-size: 18px;
+  font-size: 1.8rem;
+}
+
+.weploy-button-green:hover {
+  color: white;
 }
 
 .weploy-form {
@@ -59,12 +67,12 @@ body {
   width: 500px;
   
   label {
-    margin-bottom: 10px;
-    font-size: 20px;
+    margin-bottom: 1rem;
+    font-size: 2rem;
   }
   input {
-    margin-bottom: 10px;
-    padding: 5px;
+    margin-bottom: 1rem;
+    padding: 0.5rem;
   }
 }
 
