@@ -25,7 +25,7 @@ tues_thurs_schema = RateSchema.new(
 weekend_schema = RateSchema.new(
   base_rate: 47.0,
   start_time: Time.zone.parse('5:00'),
-  end_time: Time.zone.parse('17:00'),
+  end_time: Time.zone.parse('17:00')
 )
 
 RATE_SCHEMA = {

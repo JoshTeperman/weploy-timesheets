@@ -8,31 +8,31 @@ class Timesheet < ApplicationRecord
   validate :start_time_cannot_be_after_end_time
   validate :date_cannot_be_in_the_future
   validate :time_sheet_cannot_overlap
-
   before_create :calculate_timesheet_amount
 
   private
 
   def start_time_cannot_be_after_end_time
-    if start_time.present? && end_time.present?
-      errors.add(:start_time, 'must be before end time') if start_time >= end_time
-    end
+    return unless start_time.present? && end_time.present?
+
+    errors.add(:start_time, 'must be before end time') if start_time >= end_time
   end
 
   def date_cannot_be_in_the_future
-    if date.present?
-      errors.add(:date, 'cannot be in the future') if date > Date.current
-    end
+    return unless date.present?
+
+    errors.add(:date, 'cannot be in the future') if date > Date.current
   end
 
   def time_sheet_cannot_overlap
-    if start_time.present? && end_time.present?
-      Timesheet.all.map do |timesheet|
-        unless timesheet.id == id || date != timesheet.date
-          errors.add(:base, 'Timesheets cannot overlap') if overlaps?(timesheet)
-          # return self.errors
-        end
-      end
+    return unless start_time.present? && end_time.present?
+
+    Timesheet.all.map do |timesheet|
+      next if timesheet.id == id
+      next if date != timesheet.date
+
+      errors.add(:base, 'Timesheets cannot overlap') if overlaps?(timesheet)
+        # return self.errors
     end
   end
 
@@ -47,7 +47,6 @@ class Timesheet < ApplicationRecord
 
   def calculate_timesheet_amount
     rate_schema = select_rate_schema_for_timesheet
-    
     base_rate_range = create_set_from_time_range(
       rate_schema.start_time,
       rate_schema.end_time
@@ -65,14 +64,7 @@ class Timesheet < ApplicationRecord
 
   def select_rate_schema_for_timesheet
     day = ApplicationController.helpers.fetch_day(self)
-    case day
-    when 'Monday' || 'Wednesday' || 'Friday'
-      MON_WED_FRI_SCHEMA
-    when 'Tuesday' || 'Thursday'
-      TUES_THURS_SCHEMA
-    when 'SAT' || 'SUN'
-      WEEKEND_SCHEMA
-    end
+    RATE_SCHEMA[day.to_sym]
   end
 
   def create_set_from_time_range(start_time, end_time)
