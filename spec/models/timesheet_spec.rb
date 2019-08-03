@@ -17,7 +17,7 @@ RSpec.describe Timesheet, type: :model do
     attributes_for(:timesheet)
   end
 
-  describe 'Timesheet Model' do    
+  describe 'Timesheet Model' do
     it 'has a date' do
       expect(valid_timesheet.date.present?).to eq(true)
     end
@@ -201,13 +201,13 @@ RSpec.describe Timesheet, type: :model do
         end
       end
     end
-    
+
     describe 'Tuesday Thursday' do
       let(:min_rate) { 25.0 }
       let(:max_rate) { 35.0 }
       let(:min_rate_start) { Time.zone.parse('5:00') }
       let(:min_rate_end) { Time.zone.parse('17:00') }
-      
+
       let(:min_rate_timesheet) do
         create(:timesheet,
           date: tuesday,
@@ -223,7 +223,7 @@ RSpec.describe Timesheet, type: :model do
           end_time: Time.zone.parse('5:00')
         )
       end
-      
+
       let(:both_rates_timesheet) do
         create(:timesheet,
           date: tuesday,
@@ -238,13 +238,13 @@ RSpec.describe Timesheet, type: :model do
           total_expected_amount = total_hours * min_rate
           expect(min_rate_timesheet.amount).to eq(total_expected_amount)
         end
-        
+
         it 'calculates when only max_rate on a Thursday' do
           total_hours = (5 - 1)
           total_expected_amount = total_hours * max_rate
           expect(max_rate_timesheet.amount).to eq(total_expected_amount)
         end
-        
+
         it 'calculates when both min and max_rate on a Tuesday' do
           total_min_hours = (17 - 5)
           total_max_hours = (5 - 1)
@@ -252,19 +252,19 @@ RSpec.describe Timesheet, type: :model do
           expect(both_rates_timesheet.amount).to eq(total_expected_amount)
         end
       end
-      
+
       describe 'complicated example calculations' do
         it '2:10 to 16:20 on a Thursday' do
           start_time = Time.zone.parse('2:10')
           end_time = Time.zone.parse('16:20')
           timesheet = create(:timesheet, date: thursday, start_time: start_time, end_time: end_time)
-          
+
           total_min_seconds = end_time - min_rate_start
           total_max_seconds = min_rate_start - start_time
           total_min_amount = (total_min_seconds * min_rate) / SECONDS_IN_AN_HOUR
           total_max_amount = (total_max_seconds * max_rate) / SECONDS_IN_AN_HOUR
           total_expected_amount = (total_min_amount + total_max_amount)
-          
+
           expect(timesheet.amount).to eq(total_expected_amount)
         end
 
@@ -278,7 +278,7 @@ RSpec.describe Timesheet, type: :model do
           total_min_amount = (total_min_seconds * min_rate) / SECONDS_IN_AN_HOUR
           total_max_amount = (total_max_seconds * max_rate) / SECONDS_IN_AN_HOUR
           total_expected_amount = (total_min_amount + total_max_amount)
-          
+
           expect(timesheet.amount).to eq(total_expected_amount)
         end
       end
@@ -301,7 +301,6 @@ RSpec.describe Timesheet, type: :model do
         start_time = Time.zone.parse('23:22')
         end_time = Time.zone.parse('23:23')
         timesheet = create(:timesheet, date: sunday, start_time: start_time, end_time: end_time)
-        p timesheet
         total_seconds = (end_time - start_time)
         total_expected_amount = (total_seconds * rate) / SECONDS_IN_AN_HOUR
 
@@ -309,20 +308,5 @@ RSpec.describe Timesheet, type: :model do
       end
     end
   end
-  
-  it 'can handle different timezones'
-  it 'handles incorrect datatypes correctly'
-  it 'date can be string but has to be the right format'
 end
-
-# TODO: allow user to fix errors and try again (without page refreshing) - take params and render with params
-# TODO: display all timesheets as expected
-# TODO: how to test views render as expected: https://relishapp.com/rspec/rspec-rails/v/2-0/docs/view-specs/view-spec
-# TODO: display date in readable format
-# TODO: display start_time and end_time in readable format
-
-# ! additional optional CRUD:
-# TODO: get all timesheets
-# TODO: get single timesheet
-# TODO: edit timesheet
-# TODO: delete timesheet
+  

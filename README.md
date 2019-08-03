@@ -123,3 +123,22 @@ Error Handling:
 add option for different Australian timezones
 - drop down
 - default timezone set to Melbourne in config, but should be able to override it depending on input from user.
+
+Incorporating Rubocop
+Rails scaffolded files throw a bunch of Rubocop offenses. Too much noise, no signal. 
+Need to learn more about how to configure Rubocop work with Rails.
+
+# TODO: it 'can handle different timezones'
+# TODO: it 'handles incorrect datatypes correctly'
+
+# TODO: allow user to fix errors and try again (without page refreshing) - take params and render with params
+# TODO: display all timesheets as expected
+# TODO: how to test views render as expected: https://relishapp.com/rspec/rspec-rails/v/2-0/docs/view-specs/view-spec
+# TODO: display date in readable format
+# TODO: display start_time and end_time in readable format
+
+# ! additional optional CRUD:
+# TODO: get all timesheets
+# TODO: get single timesheet
+# TODO: edit timesheet
+# TODO: delete timesheet
