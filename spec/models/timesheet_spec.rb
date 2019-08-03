@@ -1,5 +1,6 @@
 require 'rails_helper'
 # require_relative '../../app/helpers/timesheets_helper'
+require_relative '../../lib/constants'
 require 'date'
 require 'pry'
 
@@ -123,12 +124,10 @@ RSpec.describe Timesheet, type: :model do
     let(:sunday) { Date.new(2019, 7, 7) }
 
     describe 'Monday Wednesday Friday' do
-      # Rates:
-      # 07:00 - 19:00 -> $22 per hour
-      # other times   -> $33 per hour
       let(:min_rate) { 22.0 }
       let(:max_rate) { 33.0 }
-      let(:seconds_in_an_hour) { 60 * 60 }
+      let(:min_rate_start) { Time.zone.parse('7:00') }
+      let(:min_rate_end) { Time.zone.parse('19:00') }
 
       let(:min_rate_timesheet) do
         create(:timesheet,
@@ -140,7 +139,7 @@ RSpec.describe Timesheet, type: :model do
 
       let(:max_rate_timesheet) do
         create(:timesheet,
-          date: monday,
+          date: wednesday,
           start_time: Time.zone.parse('1:00'),
           end_time: Time.zone.parse('5:00')
         )
@@ -154,57 +153,135 @@ RSpec.describe Timesheet, type: :model do
         )
       end
 
-      it 'calculates when only min rate' do
-        total_hours = (19 - 7)
-        total_expected_amount = total_hours * min_rate
-        expect(min_rate_timesheet.amount).to eq(total_expected_amount)
+      describe 'simple example calculations' do
+        it 'calculates when only min rate on a Monday' do
+          total_hours = (19 - 7)
+          total_expected_amount = total_hours * min_rate
+          expect(min_rate_timesheet.amount).to eq(total_expected_amount)
+        end
+
+        it 'calculates when only max rate on a Wednesday' do
+          total_hours = (5 - 1)
+          total_expected_amount = total_hours * max_rate
+          expect(max_rate_timesheet.amount).to eq(total_expected_amount)
+        end
+
+        it 'calculates when both min and max rates on a Monday' do
+          total_min_hours = (19 - 7)
+          total_max_hours = (7 - 1)
+          total_expected_amount = (total_max_hours * max_rate) + (total_min_hours * min_rate)
+          expect(both_rates_timesheet.amount).to eq(total_expected_amount)
+        end
+
+        it '7:00 to 12:30 on a Monday' do
+          start_time = Time.zone.parse('7:00')
+          end_time = Time.zone.parse('12:30')
+          timesheet = create(:timesheet, date: monday, start_time: start_time, end_time: end_time)
+
+          total_min_hours = (12.5 - 7)
+          total_expected_amount = (total_min_hours * min_rate)
+
+          expect(timesheet.amount).to eq(total_expected_amount)
+        end
       end
 
-      it 'calculates when only max rate' do
-        total_hours = (5 - 1)
-        total_expected_amount = total_hours * max_rate
-        expect(max_rate_timesheet.amount).to eq(total_expected_amount)
-      end
+      describe 'complicated example calculations' do
+        it '7:23 to 21:02 on a Wednesday' do
+          start_time = Time.zone.parse('7:23')
+          end_time = Time.zone.parse('21:02')
+          timesheet = create(:timesheet, date: wednesday, start_time: start_time, end_time: end_time)
 
-      it 'calculates when both min and max rates' do
-        total_min_hours = (19 - 7)
-        total_max_hours = (7 - 1)
-        total_expected_amount = (total_max_hours * max_rate) + (total_min_hours * min_rate)
-        expect(both_rates_timesheet.amount).to eq(total_expected_amount)
-      end
+          total_max_seconds = end_time - min_rate_end
+          total_min_seconds = min_rate_end - start_time
+          total_min_amount = (total_min_seconds * min_rate) / SECONDS_IN_AN_HOUR
+          total_max_amount = (total_max_seconds * max_rate) / SECONDS_IN_AN_HOUR
+          total_expected_amount = (total_min_amount + total_max_amount)
 
-      it '7:00 to 12:30 on a Monday' do
-        start_time = Time.zone.parse('7:00')
-        end_time = Time.zone.parse('12:30')
-        timesheet = create(:timesheet, date: monday, start_time: start_time, end_time: end_time)
-
-        total_min_hours = (12.5 - 7)
-        total_expected_amount = (total_min_hours * min_rate)
-
-        expect(timesheet.amount).to eq(total_expected_amount)
-      end
-
-      it '7:23 to 21:02 on a Wednesday' do
-        start_time = Time.zone.parse('7:23')
-        end_time = Time.zone.parse('21:02')
-        min_rate_start = Time.zone.parse('7:00')
-        min_rate_end = Time.zone.parse('19:00')
-        timesheet = create(:timesheet, date: wednesday, start_time: start_time, end_time: end_time)
-
-        total_max_seconds = end_time - min_rate_end
-        total_min_seconds = min_rate_end - start_time
-        total_min_amount = (total_min_seconds * min_rate) / seconds_in_an_hour
-        total_max_amount = (total_max_seconds * max_rate) / seconds_in_an_hour
-        total_expected_amount = (total_min_amount + total_max_amount)
-
-        expect(timesheet.amount).to eq(total_expected_amount)
+          expect(timesheet.amount).to eq(total_expected_amount)
+        end
       end
     end
 
     describe 'Tuesday Thursday' do
-      it 'calculates when only $25 hourly rate'
-      it 'calculates when only $35 hourly rate'
-      it 'calculates when both $25 and $35 hourly rate'
+      let(:min_rate) { 25.0 }
+      let(:max_rate) { 35.0 }
+      let(:min_rate_start) { Time.zone.parse('5:00') }
+      let(:min_rate_end) { Time.zone.parse('17:00') }
+
+      let(:min_rate_timesheet) do
+        create(:timesheet,
+          date: tuesday,
+          start_time: Time.zone.parse('5:00'),
+          end_time: Time.zone.parse('17:00')
+        )
+      end
+
+      let(:max_rate_timesheet) do
+        create(:timesheet,
+          date: thursday,
+          start_time: Time.zone.parse('1:00'),
+          end_time: Time.zone.parse('5:00')
+        )
+      end
+
+      let(:both_rates_timesheet) do
+        create(:timesheet,
+          date: tuesday,
+          start_time: Time.zone.parse('1:00'),
+          end_time: Time.zone.parse('17:00')
+        )
+      end
+
+      describe 'simple example calculations' do
+        it 'calculates when only min_rate on a Tuesday' do
+          total_hours = (17 - 5)
+          total_expected_amount = total_hours * min_rate
+          expect(min_rate_timesheet.amount).to eq(total_expected_amount)
+        end
+
+        it 'calculates when only max_rate on a Thursday' do
+          total_hours = (5 - 1)
+          total_expected_amount = total_hours * max_rate
+          expect(max_rate_timesheet.amount).to eq(total_expected_amount)
+        end
+
+        it 'calculates when both min and max_rate on a Tuesday' do
+          total_min_hours = (17 - 5)
+          total_max_hours = (5 - 1)
+          total_expected_amount = (total_max_hours * max_rate) + (total_min_hours * min_rate)
+          expect(both_rates_timesheet.amount).to eq(total_expected_amount)
+        end
+      end
+
+      describe 'complicated example calculations' do
+        it '2:10 to 16:20 on a Thursday' do
+          start_time = Time.zone.parse('2:10')
+          end_time = Time.zone.parse('16:20')
+          timesheet = create(:timesheet, date: thursday, start_time: start_time, end_time: end_time)
+
+          total_min_seconds = end_time - min_rate_start
+          total_max_seconds = min_rate_start - start_time
+          total_min_amount = (total_min_seconds * min_rate) / SECONDS_IN_AN_HOUR
+          total_max_amount = (total_max_seconds * max_rate) / SECONDS_IN_AN_HOUR
+          total_expected_amount = (total_min_amount + total_max_amount)
+
+          expect(timesheet.amount).to eq(total_expected_amount)
+        end
+
+        it '00:01 to 23:59 on a Tuesday' do
+          start_time = Time.zone.parse('00:01')
+          end_time = Time.zone.parse('23:59')
+          timesheet = create(:timesheet, date: tuesday, start_time: start_time, end_time: end_time)
+
+          total_max_seconds = (end_time - min_rate_end) + (min_rate_start - start_time)
+          total_min_seconds = min_rate_end - min_rate_start
+          total_min_amount = (total_min_seconds * min_rate) / SECONDS_IN_AN_HOUR
+          total_max_amount = (total_max_seconds * max_rate) / SECONDS_IN_AN_HOUR
+          total_expected_amount = (total_min_amount + total_max_amount)
+
+          expect(timesheet.amount).to eq(total_expected_amount)
+        end
+      end
     end
   end
 

@@ -112,6 +112,8 @@ Also works fairly well assuming that rates are configured based on weekday. You 
 
 https://tosbourn.com/set-intersection-in-ruby/
 
+TESTING:
+Wasn't sure whether I should be using constants to help define my tests. I defined min_rate, max_rate and start & end_times in my tests to calculate the expected answer, then let my actual code produce results that I could test. I thought this would help me test the code itself rather than risk false positives from errors being replicated in my tests. However at the same time It led to a lot of additional repeated code, and changing constants like RateSchema instances would require a lot of changes in my tests as well. 
 
 EXTENDING:
 
