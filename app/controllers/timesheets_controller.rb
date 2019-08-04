@@ -3,10 +3,6 @@ class TimesheetsController < ApplicationController
     @timesheets = Timesheet.all
   end
 
-  def show
-    @timesheet = Timesheet.find(params[:id])
-  end
-
   def new
     @timesheet = Timesheet.new
   end
@@ -26,14 +22,6 @@ class TimesheetsController < ApplicationController
       flash[:errors] = @timesheet.errors.full_messages
       redirect_to new_timesheet_path
     end
-  end
-
-  def update
-    @timesheet = Timesheet.find(params[:id])
-  end
-
-  def destroy
-    Timesheet.destroy(params[:id])
   end
 
   private
