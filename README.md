@@ -128,6 +128,13 @@ Incorporating Rubocop
 Rails scaffolded files throw a bunch of Rubocop offenses. Too much noise, no signal. 
 Need to learn more about how to configure Rubocop work with Rails.
 
+time_select
+date_select
+with strong_params
+https://stackoverflow.com/questions/3677531/separate-date-and-time-form-fields-in-rails
+
+
+
 # TODO: it 'can handle different timezones'
 # TODO: it 'handles incorrect datatypes correctly'
 

@@ -1,0 +1,13 @@
+  <%= form_for @timesheet, url: {action: "create"}, html: {class: "weploy_form"} do |f| %>
+  
+    <%= f.label 'Date' %>
+    <%= f.date_select :date%>
+
+    <%= f.label 'Start Time' %>
+    <%= f.time_select :start_time %>
+    <%= f.label 'End Time' %> 
+    <%= f.time_select :end_time %>
+    <%= f.submit "Create", :class => "create-button" %>
+  <% end %>
+
+
