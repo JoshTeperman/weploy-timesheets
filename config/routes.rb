@@ -8,4 +8,6 @@ Rails.application.routes.draw do
   post '/timesheets', to: 'timesheets#create', as: 'create_timesheet'
   get '/timesheets/:id/edit', to: 'timesheets#edit', as: 'edit_timesheet'
   patch '/timesheets/:id', to: 'timesheets#udpate', as: 'update_timesheet'
+
+  root to: 'timesheets#index'
 end

@@ -136,6 +136,7 @@ https://stackoverflow.com/questions/3677531/separate-date-and-time-form-fields-i
 
 
 # TODO: it 'can handle different timezones'
+https://guides.rubyonrails.org/form_helpers.html#time-zone-and-country-select
 # TODO: it 'handles incorrect datatypes correctly'
 
 # TODO: allow user to fix errors and try again (without page refreshing) - take params and render with params

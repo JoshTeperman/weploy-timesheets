@@ -41,6 +41,7 @@ group :development, :test do
   gem 'byebug', platforms: [:mri, :mingw, :x64_mingw]
   gem 'rspec-rails'
   gem 'factory_bot_rails'
+  gem 'simplecov', require: false
 end
 
 group :development do
@@ -60,3 +61,5 @@ gem "jquery-rails", "~> 4.3"
 gem "bootstrap", "~> 4.3"
 
 gem "pry", "~> 0.12.2"
+
+gem "rails-controller-testing", "~> 1.0"

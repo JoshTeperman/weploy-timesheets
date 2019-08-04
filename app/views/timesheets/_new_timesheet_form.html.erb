@@ -1,7 +1,7 @@
   <%= form_for @timesheet, url: {action: "create"}, html: {class: "weploy_form"} do |f| %>
   
     <%= f.label 'Date' %>
-    <%= f.date_select :date%>
+    <%= f.date_select :date %>
 
     <%= f.label 'Start Time' %>
     <%= f.time_select :start_time %>
