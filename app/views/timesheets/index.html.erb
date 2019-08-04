@@ -1,5 +1,9 @@
 <div class="page-container">
   <%= link_to 'Create a New Timesheet', {controller: 'timesheets', action: 'new'}, class: 'weploy-button-green' %>
   <h1>My Timesheets</h1>
-  <%= render 'timesheets_table' %>
+  <% if @timesheets.empty? %>
+    <h2>No timesheets</h2>
+  <% else %>
+    <%= render 'timesheets_table' %>
+  <% end %>
 </div>

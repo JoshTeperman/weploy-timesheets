@@ -15,24 +15,24 @@ RSpec.describe TimesheetsController, type: :controller do
 
   describe 'Routes' do
     describe '#GET: timesheets#index' do
-      it 'returns status 200', :filter => true do
+      it 'returns status 200', filter: true do
         get :index
         expect(response.status).to eq(200)
       end
 
-      it 'renders the index template', :filter => true do
+      it 'renders the index template', filter: true do
         get :index
         assert_template 'timesheets/index'
       end
     end
 
     describe '#GET: timesheets#new' do
-      it 'returns status 200', :filter => true do
+      it 'returns status 200', filter: true do
         get :new
         expect(response.status).to eq(200)
       end
 
-      it 'renders the new timesheet template', :filter => true do
+      it 'renders the new timesheet template', filter: true do
         get :new
         assert_template 'timesheets/new'
       end
@@ -57,19 +57,19 @@ RSpec.describe TimesheetsController, type: :controller do
         } }
       end
 
-      it 'creates a Timesheet', :filter => true do
+      it 'creates a Timesheet', filter: true do
         expect do
           post :create, params: valid_params
         end.to change(Timesheet, :count).by(1)
       end
 
-      it 'creates a Timesheet when submitted from form_for', :filter => true do
+      it 'creates a Timesheet when submitted from form_for', filter: true do
         expect do
           post :create, params: form_for_params
         end.to change(Timesheet, :count).by(1)
       end
-      
-      it 'assigns a new Timesheet', :filter => true do
+
+      it 'assigns a new Timesheet', filter: true do
         post :create, params: valid_params
         assigns(:timesheet).should be_a(Timesheet)
       end

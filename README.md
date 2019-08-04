@@ -1,78 +1,118 @@
-# README
+# Timesheets - 2019 Weploy Coding Test
 
-Date datatype
-Time datatype
-time zones
+![Weploy Logo](lib/assets/logo.jpg)
+## About
+This is my attempt at Weploy's 2019 backend technical challenge,
 
-Postgres stores dates/times as UTC
+## Setup
 
-Timezones to consider:
-"Darwin" => "Australia/Darwin", 
-"Adelaide" => "Australia/Adelaide", 
-"Canberra" => "Australia/Melbourne", 
-"Melbourne" => "Australia/Melbourne", 
-"Sydney" => "Australia/Sydney", 
-"Brisbane" => "Australia/Brisbane", 
-"Hobart" => "Australia/Hobart", 
+To download this application to your computer, navigate to the directory you want to use on your computer and run the following:
+```
+git clone https://github.com/JoshTeperman/weploy-timesheets.git
+```
+This should install the files locally. You can then run `cd weploy-timesheets` to open the application directory. 
 
-Assumptions:
-Jobs start and finish on the same day, or timesheets are only recorded for work that day
-7am - 7pm means 7:00pm inclusive (therefore 7:00am is max_rate, as is 7:00pm)
+Alternatively, you can download the code directly to your hard-drive: https://github.com/JoshTeperman/weploy-timesheets/archive/master.zip
+To run this application, you will first need to have Ruby 2.6.0 installed on your machine. 
 
+Installation instructions here: https://www.ruby-lang.org/en/documentation/installation/
+
+You will also need Bundler installed:
+```
+gem install bundler
+```
+Once you have Ruby + Bundler installed, you can install the gem dependencies with this command:
+```
+bundle install
+```
+
+Once the gems are installed you need to set up the local database on your machine. Run these three commands:
+```
+rails db:create
+rails db:migrate
+rails db:seed
+``` 
+Once you've done that you should be able to run `rails s` to start the local server and visit http://localhost:3000/ to view a live version of the application.
+
+To run the test suite and see if anything is failing run `bundle exec rspec` and you should see every test and a summary of the results of the tests. 
+
+To view a test-coverage summary of the coverage of the tests you can run `open coverage/index.html` from console which will open a tab in your default browser and display test coverage information.
+
+# App Description 
+
+### Tech Stack
+Since the challenge specifically stated the application had to be written in Ruby I decided to create a Rails application. Therefore my tech stack is Ruby, Embedded Ruby, HTML and CSS/SASS.
+
+### Architecture 
+I followed the Rails MVC Architecture, with modularized code split up into Models, Views and Controllers. 
+
+>Front End
+The front end Views are created using Embedded Ruby served with data from the backend and styled with CSS and SASS. 
+
+>Back End
+My app uses the default Rails server, with Rails Routes and Controllers handling the business logic and responding to HTTP requests. 
+There is only one Model, the Timesheet which is defined in the Models directory, and Timesheet data is stored in a PostgresQL Database accessed using Active Record. 
+
+## Functionality (Front End): 
+The front end of this application is very simple. A user visiting the webstie can only do two things:
+- Create New Timesheets
+- View Timesheets
+
+Any errors from the backend are displayed as flash messages that the user can click to close.
+
+Successfully creating a Timesheet redirects the user to the index page where they see a success flash message.
+
+## Functionality (Back End): 
+The backend creates new Timesheets and serves Timesheet data to the frontend in response to to HTTP requests.
+
+New Timesheets are using Rails hard parameters and additional custom validation functions. The code confirms that:
+- they contain each of the required attributes 'date', 'start_time', 'end_time'
+- they don't overlap
+- they are in the past
+- their start time is before their end time
+
+Any errors raised by these validations are captured and sent to the front end so they can be seen by the user.
+
+When a timesheet is created the salary amount is calculated dynamically by a callback function, down to the minute.
+
+New salary schema can flexibly be created and assigned to specifica days so that timesheet amounts are automatically calculated based on the day of the week, and whether or not the hours were normal hours, overtime hours, or both. 
+
+### File Structure
+
+![App File Structure](lib/assets/file_structure_app.png)
+
+## Solution / Key Decisions
+
+### Structure / Modularization
+focus on modularising / separation of concerns / configuring
+... with the assumption that this would be expanded upon 
+- Constants
+- Additional RateSchema class to allow for flexibly managing different rates for different days 
+- Using Timesheet Helper
+- Factory Bot
+- Refactoring 
+
+### Rubocop 
+Variable naming
+-> felt it was difficult to undertand what was going on without some descriptive naming
+-> wasn't sure what to do about some methods that were long or had too many branches according to Rubocop
+
+### Bootstrap
+Installed the gem, used it for flash messages so they can be closed, rather than using the rails guides syntax for displaying error messages on screen. 
+- Not a great idea to install gems just for small use case, must be a better option as I'm not using Bootstrap or JQuery for anything else.
+
+### Managing Rates
+Backend functionality created so that new Rate Schema can be created as an instance of RateSchema class, and then assigned days of the week.  can be 
+
+.. Could also conceivably be assigned to days of the year / specific dates using additional control flow eg:
+```
+rate_schema = christmas_rate if christmas?
+```
+
+## Amount Calculation
 Solving Amount calculation 
 Attempt 1: 
 
-if else / case hell:
-
-if start_time is before min_rate_start
-  if end_time is also before min_rate start
-    then the total is end_time - start_time * min_rate
-  else if end_time is after min_rate end_time
-    then total is end time - min_rate_end * min_rate
-    plus min_rate start_time - start_time * min_rate
-    plus total max_rate time * min_rate
-  else (end_time is during max_rate time)
-    then total is end_time - min_rate_start * max_rate
-    plus min_rate_start - start_time * min_rate
-  end
-else if start_time is after min_rate start && start_time is also after max_rate end
-  then the total is end_time - start_time * min_rate
-else (start_time is during max_rate time)
-  if end_time is before min_rate end
-    then the total is end_time - start_time * max_rate
-  else (end_time is after min_rate_end)
-    then the total is end_time - min_rate_end * min_rate
-    plus min_rate_end - start_time * max_rate
-  end
-end
-
-case start_time
-when start_time is before min_rate_start
-  case end_time
-  when end_time is also before min_rate start
-    then the total is end_time - start_time * min_rate
-  when end_time is after min_rate end_time
-    then total is end time - min_rate_end * min_rate
-    plus min_rate start_time - start_time * min_rate
-    plus total max_rate time * min_rate
-  else (end_time is during max_rate time)
-    then total is end_time - min_rate_start * max_rate
-    plus min_rate_start - start_time * min_rate
-  end
-when start_time is after min_rate start && also after max_rate end
-  then the total is end_time - start_time * min_rate
-else (start_time is during max_rate time)
-  case end_time
-  when end_time is before min_rate end
-    then the total is end_time - start_time * max_rate
-  else (end_time is after min_rate_end)
-    then the total is end_time - min_rate_end * min_rate
-    plus min_rate_end - start_time * max_rate
-  end
-end
-    
-
-    
 Attempt 2:
 Intersection
 
@@ -112,10 +152,34 @@ Also works fairly well assuming that rates are configured based on weekday. You 
 
 https://tosbourn.com/set-intersection-in-ruby/
 
-TESTING:
+# Testing
+> Test File Structure 
+
+![Test File Structure](lib/assets/file_structure_spec.png)
+
+> Test Suite
+
+![Test Suite](lib/assets/test_suite.png)
+
+> Test Coverage
+![Test Coverage](lib/assets/test_coverage_screenshot.png)
+
 Wasn't sure whether I should be using constants to help define my tests. I defined min_rate, max_rate and start & end_times in my tests to calculate the expected answer, then let my actual code produce results that I could test. I thought this would help me test the code itself rather than risk false positives from errors being replicated in my tests. However at the same time It led to a lot of additional repeated code, and changing constants like RateSchema instances would require a lot of changes in my tests as well. 
 
-EXTENDING:
+
+# Assumptions:
+
+- Timesheets always start and end on the same day.
+- '7am - 7pm' is inclusive, therefore a Monday timesheet starting at 7:00am and finishing at 7:00pm will include both the 7:00am minute and teh 7:00pm minute at the minimum rate
+- Time Zones are set to Melbourne for the purposes of this app.
+- The server will always be available, as will the internet connecction.
+- The New Timesheet Form will always result in a POST request that attempts to create a model with the expected datatypes, except in cases where a field may be left blank.
+- A user is authorized to view any endpoint and access any controller method.
+
+# Takeaways / Challenges:
+
+# Extending the Application
+
 Error Handling:
 - minimum timesheet of 5 minutes?
 - handle overlapping days
@@ -134,19 +198,8 @@ with strong_params
 https://stackoverflow.com/questions/3677531/separate-date-and-time-form-fields-in-rails
 
 
-
-# TODO: it 'can handle different timezones'
+TO DO:
+it 'can handle different timezones'
 https://guides.rubyonrails.org/form_helpers.html#time-zone-and-country-select
-# TODO: it 'handles incorrect datatypes correctly'
-
-# TODO: allow user to fix errors and try again (without page refreshing) - take params and render with params
-# TODO: display all timesheets as expected
-# TODO: how to test views render as expected: https://relishapp.com/rspec/rspec-rails/v/2-0/docs/view-specs/view-spec
-# TODO: display date in readable format
-# TODO: display start_time and end_time in readable format
-
-# ! additional optional CRUD:
-# TODO: get all timesheets
-# TODO: get single timesheet
-# TODO: edit timesheet
-# TODO: delete timesheet
+it 'handles incorrect datatypes correctly'
+allow user to fix errors and try again (without page refreshing) - take params and render with params
