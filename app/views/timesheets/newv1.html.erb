@@ -4,7 +4,6 @@
   <h1>Create a New Timesheet</h1>
   <form class="weploy-form" action="<%= create_timesheet_path %>" method="POST">
     <input type="hidden" value="<%= form_authenticity_token %>" name="authenticity_token">
-    <input type="hidden" name="cache" name="temporary_timesheet" id="cache">
     
     <label for="date">Date</label>
     <input type="date" name="date" id="date" />

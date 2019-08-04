@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe TimesheetsHelper, type: :helper do
-  describe 'fetch_day method' do
+  describe '#fetch_day' do
     let(:monday_timesheet) { build(:timesheet, date: Date.new(2019, 7, 1)) }
     it 'returns Monday' do
       expect(fetch_day(monday_timesheet)).to eq('Monday')

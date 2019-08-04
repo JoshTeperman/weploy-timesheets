@@ -25,7 +25,7 @@ class TimesheetsController < ApplicationController
       redirect_to :index
     else
       flash[:errors] = @timesheet.errors.full_messages
-      redirect_to new_timesheet_pathd
+      redirect_to new_timesheet_path
     end
   end
 
