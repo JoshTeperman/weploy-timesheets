@@ -1,4 +1,3 @@
-# require 'rails_helper'
 require 'pry'
 require_relative '../../lib/rate_schema'
 require_relative '../../lib/constants'
@@ -32,7 +31,6 @@ class Timesheet < ApplicationRecord
       next if date != timesheet.date
 
       errors.add(:base, 'Timesheets cannot overlap') if overlaps?(timesheet)
-      # return self.errors
     end
   end
 
