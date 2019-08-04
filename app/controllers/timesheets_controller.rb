@@ -12,14 +12,13 @@ class TimesheetsController < ApplicationController
   end
 
   def create
-    if params[:timesheet]['date(1i)'].present?
+    if params[:timesheet].present? && params[:timesheet]['date(1i)'].present?
       params[:date] = parse_date
       params[:start_time] = parse_start_time
       params[:end_time] = parse_end_time
     end
 
     @timesheet = Timesheet.create(timesheet_params)
-
     if @timesheet.valid?
       flash[:success] = 'created a new timesheet'
       redirect_to :index
@@ -46,7 +45,7 @@ class TimesheetsController < ApplicationController
     Date.new(year.to_i, month.to_i, day.to_i)
   end
 
-  def  parse_start_time
+  def parse_start_time
     start_time_hour = params[:timesheet]['start_time(4i)']
     start_time_minute = params[:timesheet]['start_time(5i)']
     Time.zone.parse("#{start_time_hour}:#{start_time_minute}")

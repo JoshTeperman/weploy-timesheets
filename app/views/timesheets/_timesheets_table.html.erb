@@ -1,0 +1,14 @@
+<table id="timesheet-table">
+    <tr>
+      <th>Date</th>
+      <th>Time</th>
+      <th>Amount</th>
+    </tr>
+    <% @timesheets.each do |timesheet| %>
+      <tr>
+        <td><%= timesheet.date.strftime("%-d/%-m/%Y") %></td>
+        <td><%= timesheet.start_time.strftime("%H:%M") %> - <%= timesheet.end_time.strftime("%H:%M") %></td>
+        <td>$<%= timesheet.amount.round(2) %></td>
+      </tr>
+    <% end %>
+</table>
