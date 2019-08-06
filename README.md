@@ -40,6 +40,14 @@ To view a test-coverage summary of the coverage of the tests you can run `open c
 # App Description 
 Timesheet management application built in Ruby on Rails. 
 
+## Screenshots
+
+>Home / Index View
+![Index View Screenshot](lib/assets/index_page.png)
+
+>New Timesheet View
+![New Timesheet View Screenshot](lib/assets/new_timesheet_page.png)
+
 ## Functionality (Front End): 
 The front end of this application is very simple. A user visiting the webstie can only do two things:
 - Create New Timesheets
@@ -160,90 +168,71 @@ Taking the example I mentioned above, for someone working 5am to 5pm on a Monday
 
 - the timesheet starts at 5am and ends at 5pm
 - the base rate for Monday starts at 7am and ends at 7pm
-- the premium rate for Monday therefore has two ranges, from 12:01am to 6:59am, and from 7:01pm to 11:59pm
+- the premium rate for Monday, which is any time outside of the base rate, therefore has two ranges: from 12:01am to 6:59am, and from 7:01pm to 11:59pm
 
-That means that what I am actually calculating is when the timesheet overlaps with those three ranges.
+when calculating the amount attribute of a timesheet, what I am actually calculating is when the timesheet overlaps with those three ranges, and how much they overlap.
 
-base rate time = when timesheet overlaps with base rate time range
-premium rate time = when timesheet overlaps with the two premium rate time range
+In other words:
 
-When you parse this logic into mathematics, what the equation becomes:
+BASE RATE TIME = when timesheet overlaps with base rate time range\
+PREMIUM RATE TIME = when timesheet overlaps with the two premium rate time range
 
-base rate time = the intersection of the timesheet set with the base rate set
-... or the intersection of Set A and Set B in the image above.
-premium rate time = the intersection of the timesheet set with the two premium rate sets
+In the language of Sets this can be written as:
+
+BASE RATE TIME = the intersection of the timesheet set with the base rate set\
+PREMIUM RATE TIME = the intersection of the timesheet set with the two premium rate sets
 
 To simplify this further, instead of doing two separate calculations for premium time and adding them together, you can do this in one calculation using subtraction. We know that any timesheet time that is *not* base rate time must be premium time, therefore subtracting all of the base rate time from the timesheet should give us the remainder, which must be premium time by definition. 
 
 In Sets, we can do this by finding the *difference* between two sets. Therefore:
 
-premium rate time = the difference between the Timesheet Set and Base Rate Set.
+PREMIUM RATE TIME = the difference between the Timesheet Set and Base Rate Set.
 
 >Calculating Amount - seconds_since_midnight
 
-The other piece of the puzzle was finding a way to actually do the calculation with Sets. In practise a Set is similar to an Array, and is created from a Range or Array of numbers. The Sets I would be working with were all ranges taken from a start time and and end time. Therefore it made sense to start thinking of time periods as ranges as consecutive units of time located somewhere between 0 (12:00am) and n (11:59pm). Thinking this way, every second in a 24 hour period would refer to an exact point of Time during that   I used `seconds_since_midnight` to first turn each Time into a number 
+The other piece of the puzzle was finding a way to actually do the calculation with Sets. In practise a Set is similar to an Array, and is created from a Range or Array of numbers. The Sets I would be working with were all ranges taken from a start time and and end time. Therefore it made sense to start thinking of time periods as ranges, or as consecutive units of time located somewhere between the Integer `0` (12:00am) and `n` (11:59pm), where `n` is the total number of seconds in 24 hours. Thinking this way would have a couple of very important benefits:
+- Every second in a 24 hour period would refer to an exact point of Time during the day
+- Since seconds are now numbers and ordered from smallest to largest, we can convert seconds into Ranges, Arrays, and Sets as necessary, and use the built-in Ruby Class methods to manipulate them
+- We can now calculate exact amounts for a period of time down to the second
 
-Thinking of time in seconds, and thinking of a range of time as a Set of consecutive seconds solved this. If you 
+Now that I had a solution, I could attempt to create the logic that would parse the date into a day of the week, use the rules for hourly rates for that day, convert all of the ranges into sets, and then *hopefully* spit out the right `amount`.
 
-
-
-
-If we think of our timesheet start_time and end_time as a Set of numbers, where each number is a unit of time in the range (12:00..11:59)
-`day = Set.new( [(12:00..11:59)] )`
-If we think of the max-rate range as another set:
-`min_rate_set = Set.new( [(7:00..19:00)] )`
-max_rate_set = day - max_rate
-
-Then we we have a new Timesheet:
-`timesheet = Set.new( timesheet_range )`
-... we can check the overlapping sections of that timesheet with our max_rate and min_rate ranges:
-min_overlap = timesheet.intersection(min_rate_set)
-
-... and return the the salary value for each range:
-
-total_min = min_overlap.length * min_rate
-total_max = max_overlap.length * max_rate
-
-total_timesheet_amount = total_min + total_max
+>First Draft:
 
 ![First Draft](lib/assets/calculate_amount_method_first_draft.png)
 
-pros: 
-Don't have to worry about decision trees or control flow to check whether a timesheet should be calculated using min_rate, max_rate, or both. Just compare the timesheet with the relavent set and return the overlapping units of time * relavent rate.
-Less code.
-Should be fairly fast - Set's provide the useability of arrays with the speed gains of hashes
+The first draft worked well, but once again I was running into the issue of having to use `if / else` blocks as control flow to check the weekday and apply the appropriate daily rates, and there was far too much happening in the `calculate_amount` method. If a method does more than one thing, the logic should be broken up to make it more readable, easier to debug, and easier to test, so I did a major refactor, but keeping the core idea the same.
 
-cons:
-A little more obscure, not as easy to understand what's going on at first glance
-Not sure of the performance cost of rang -> array -> set conversion, Set class methods (.length on a Set, for example)
+The final version of my solution:
+- breaks the `calculate_amount` method up into six methods
+- uses a new `RateSchema` class to define different rating presets that are assigned to days of the week
+- searches a hash of all the instances of `RateSchema` by the weekday of the new Timesheet to select the appropriate rules for the calculation, thereby avoiding the need for endless `if/else` control flow to perform this logic.
+- extracts the constant SECONDS_IN_AN_HOUR so that it can be used anywhere in the code (also used in tests)
 
-Rate class with base_rate and overtime_rate works fairly well for base/overtime pairs, but would need to be reconfigured should there be more than two rates for a given day.
-Also works fairly well assuming that rates are configured based on weekday. You could theoretically create a new rule for a one-off day (ie a holiday / Christmas etc) by saying if timesheet.date = '2019/12/26' then rate = Rate.new().
-
-https://tosbourn.com/set-intersection-in-ruby/
->Final version: timesheet.rb
-
+>Final Solution
 ![Calculate Amount](lib/assets/calculate_amount_final.png)
 
-### Managing Rates with RateSchema Class
-
-While completing the `calculate_timesheet_amount` meethod, I extracted the logic defining timesheet hourly rates into it's own Class, `RateSchema`.  to allow for flexibly managing different rates for different days .
-
-I wanted to functionality created so that new Rate Schema can be created as an instance of RateSchema class, and then assigned days of the week.  can be 
-
-.. Could also conceivably be assigned to days of the year / specific dates using additional control flow eg:
-```
-rate_schema = christmas_rate if christmas?
-```
 >RateSchema Class
 
 ![Calculate Amount](lib/assets/calculate_amount_method_final3.png)
+
+>Pros of this solution:
+- More flexible
+- Easier to extend
+- Each bit of logic is extracted into its own method
+- Better separation of concerns
+- Using Sets gives us the useability of Arrays with the speed gains of hashes
+- Assuming that `RateSchema` are tied to days of the week this works well. 
+
+>Cons of this solution:
+- Code is more abstract, may require explanation for anyone who is not me.
+- I'm uncertain whether there is a performance cost for converting Time multiple times during the equation (Time > Range > Set etc) that would cancel out the performance benefits of using Sets.
+- Rate class with base_rate and overtime_rate works fairly well for base/overtime pairs, but would need to be reconfigured should there be more than two rates for a given day.
 
 # Testing
 I decided to use Rspec with rails-controller-testing and spent some additional time learning to use Factory Bot to make life easier and reduce code repetition. I also installed simplecov to analyse test converage.
 
 There are currently 38 tests, all passing. Test coverage is 85% which I'm very comfortable with as my application_helper.rb score of 30% is what's bringing the number down and that's just a bit of code that spits out flash messages using bootstrap.  
-
 
 > Test Suite
 
@@ -285,3 +274,15 @@ This is clearly not ideal, and I'm sure there must be better ways to do this whi
 - error handling for things like the server or internet not being available
 >Other
 - Rubocop: was surprised to find that default Rails scaffolded files throw a bunch of Rubocop offenses - I need to learn how to configure Rubocop work with Rails
+
+# About the author
+
+I'm Josh. Here are some of my things:
+
+[Github](https://github.com/JoshTeperman_)
+
+[Twitter](https://twitter.com/joshteperman)
+
+https://www.josht.dev/
+
+www.joshteperman.com (under construction)
