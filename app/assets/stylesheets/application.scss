@@ -12,16 +12,29 @@
  *
  */
  
-@import 'bootstrap';
-@import './styles/new.scss';
-@import './styles/index.scss';
+@import "bootstrap";
+@import "./styles/new.scss";
+@import "./styles/index.scss";
+@import "./styles/new_timesheet_form.scss";
+
+html {
+  box-sizing: border-box;
+  font-size: 10px;
+}
+
+*, *:before, *:after {
+  box-sizing: inherit;
+}
 
 body {
   font-family: 'Assistant', sans-serif;
   margin: 0px;
   padding: 0px;
   background: var(--mywhite);  
-  font-size: 10px
+}
+
+h1 {
+  font-size: 3rem;
 }
 
 a {
@@ -58,22 +71,6 @@ a:hover {
 
 .weploy-button-green:hover {
   color: white;
-}
-
-.weploy-form {
-  display: flex;
-  flex-direction: column;
-  justify-content: space-evenly;
-  width: 500px;
-  
-  label {
-    margin-bottom: 1rem;
-    font-size: 2rem;
-  }
-  input {
-    margin-bottom: 1rem;
-    padding: 0.5rem;
-  }
 }
 
 :root {

@@ -1,12 +1,19 @@
   <%= form_for @timesheet, url: {action: "create"}, html: {class: "weploy_form"} do |f| %>
-  
     <%= f.label 'Date' %>
-    <%= f.date_select :date %>
-
-    <%= f.label 'Start Time' %>
-    <%= f.time_select :start_time %>
-    <%= f.label 'End Time' %> 
-    <%= f.time_select :end_time %>
+    <div class="date">
+      <%= f.date_select :date, 
+        start_year: Date.current().year - 2, 
+        end_year: Date.current().year 
+      %>
+    </div>
+      <%= f.label 'Start Time' %>
+    <div class="start-time">
+      <%= f.time_select :start_time %>
+    </div>
+      <%= f.label 'End Time' %> 
+    <div class="end-time">
+      <%= f.time_select :end_time %>
+    </div>
     <%= f.submit "Create", :class => "create-button" %>
   <% end %>
 

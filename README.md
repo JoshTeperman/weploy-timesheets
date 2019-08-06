@@ -2,7 +2,7 @@
 
 ![Weploy Logo](lib/assets/logo.jpg)
 ## About
-This is my attempt at Weploy's 2019 *backend* technical coding challenge. 
+This is my attempt at Weploy's 2019 backend technical coding challenge. 
 
 ## Setup
 
@@ -13,9 +13,8 @@ git clone https://github.com/JoshTeperman/weploy-timesheets.git
 This should install the files locally. You can then run `cd weploy-timesheets` to open the application directory. 
 
 Alternatively, you can download the code directly to your hard-drive: https://github.com/JoshTeperman/weploy-timesheets/archive/master.zip
-To run this application, you will first need to have Ruby 2.6.0 installed on your machine. 
 
-Installation instructions here: https://www.ruby-lang.org/en/documentation/installation/
+To run this application, you will first need to have Ruby 2.6.0 installed on your machine. Installation instructions here: https://www.ruby-lang.org/en/documentation/installation/
 
 You will also need Bundler installed:
 ```
@@ -51,22 +50,24 @@ Any errors from the backend are displayed as flash messages that the user can cl
 Successfully creating a Timesheet redirects the user to the index page where they see a success flash message.
 
 ## Functionality (Back End): 
-The backend creates new Timesheets and serves Timesheet data to the frontend in response to to HTTP requests.
+The backend creates new Timesheets and serves Timesheet data to the frontend in response to HTTP requests.
 
-New Timesheets are validated using Rails hard parameters and additional custom validation functions. The code confirms that:
-- they contain each of the required attributes 'date', 'start_time', 'end_time'
-- they don't overlap
-- they are in the past
-- their start time is before their end time
+New Timesheets are validated using Rails hard parameters and additional custom validation functions. The code confirms that timesheets:
+- contain each of the required attributes 'date', 'start_time', 'end_time'
+- don't overlap
+- are in the past
+- start time is before end time
 
 Any errors raised by these validations are captured and sent to the front end so they can be seen by the user.
 
-When a timesheet is created the salary amount is calculated dynamically by a callback function, down to the minute.
+When a timesheet is created the salary amount is calculated dynamically down to the minute and added to the model before saving.
 
-New salary schema can flexibly be created and assigned to specifics days so that timesheet amounts are automatically calculated based on the day of the week, and whether or not the hours were normal hours, overtime hours, or both. 
+New salary schema can flexibly be created and assigned to specific days so that timesheet amounts are automatically calculated based on the day of the week, and whether or not the hours were normal hours, overtime hours, or both. 
 
-### Tech Stack
-Since the challenge specifically stated the application had to be written in Ruby I decided to create a Rails application. Therefore my tech stack is Ruby, Embedded Ruby, HTML and CSS/SASS.
+### Tech Stack & Framework
+Since the challenge specifically stated the application had to be written in Ruby the tech stack is Ruby, Embedded Ruby, HTML and CSS/SASS.
+
+I decided to create a Rails application rather than using Sinatra or something else. While Rails provides a lot of additional funcionality unnecessary for this project, it provides a solid platform for adding more functionality later, enforces MVC separation of concerns, and also syncs quite well with a Postgres database. 
 
 ### Architecture 
 I followed the Rails standard MVC Architecture. Modularized code separated into Models, Views and Controllers. 
@@ -84,8 +85,20 @@ There is only one Model, `Timesheet`, which is defined in the Models directory, 
 
 ![App File Structure](lib/assets/file_structure_app.png)
 
-## Decisions, Challenges & Solutions
-### Coding style 
+# Decisions, Challenges & Solutions
+
+## Assumptions:
+
+- Timesheets always start and end on the same day.
+- '7am - 7pm' is inclusive, therefore a Monday timesheet starting at 7:00am and finishing at 7:00pm will include both the 7:00am minute and teh 7:00pm minute at the minimum rate
+- There is never more than two hourly rates in a day - one base rate, and one (optional) premium rate.
+- Time Zones are set to Melbourne for the purposes of this app.
+- The server will always be available, as will the internet connecction.
+- The New Timesheet Form will always result in a POST request that attempts to create a model with the expected datatypes, except in cases where a field may be left blank.
+- A user is authorized to view any endpoint and access any controller method.
+
+
+## Coding style 
 
 I wrote this code with the assumption that the project would be extended, and someone should be able to read the code and understand what it does without needing to refer to documentation. To achieve this, I tried to follow the principles of good software development:
 - I used TDD methodology (red, orange, green) for about 70% of the project. I find this style very useful when creating features & functionality for classes and models, and helped me to identify and solve several bugs I didn't realised I had introduced until I wrote the tests that found them - Always a great feeling!
@@ -96,20 +109,7 @@ I wrote this code with the assumption that the project would be extended, and so
 - Separation of concerns
 - Providing a comprehensive testing suite to aid both refactoring and any additional extension to the codebase. Also to help describe the purpose of the code. 
 
-### RateSchema Class
-- I refactored my original solution and extracted the logic defining timesheet hourly rates into it's own Class, `RateSchema`.  to allow for flexibly managing different rates for different days 
-
-### Bootstrap
-Installed the gem, used it for flash messages so they can be closed, rather than using the rails guides syntax for displaying error messages on screen. 
-- Not a great idea to install gems just for small use case, must be a better option as I'm not using Bootstrap or JQuery for anything else.
-
-### Managing Rates
-Backend functionality created so that new Rate Schema can be created as an instance of RateSchema class, and then assigned days of the week.  can be 
-
-.. Could also conceivably be assigned to days of the year / specific dates using additional control flow eg:
-```
-rate_schema = christmas_rate if christmas?
-```
+## Key Challenges & Decisions
 
 ## Amount Calculation
 The Calculate Amount method needed to take a Timesheet and figure out how much salary had been earned for that particular time period. A Timesheet has a start time and and end time, and there are rules for each day that determine the hourly rate. 
@@ -181,7 +181,7 @@ premium rate time = the difference between the Timesheet Set and Base Rate Set.
 
 >Calculating Amount - seconds_since_midnight
 
-The other piece of the puzzle was finding a way to actually do the calculation with Sets. Sets work great when pictured on a venn diagram, but in practise a Set is similar to an Array, and is created from a Range or Array of numbers. All I had was start times and end times. 
+The other piece of the puzzle was finding a way to actually do the calculation with Sets. In practise a Set is similar to an Array, and is created from a Range or Array of numbers. The Sets I would be working with were all ranges taken from a start time and and end time. Therefore it made sense to start thinking of time periods as ranges as consecutive units of time located somewhere between 0 (12:00am) and n (11:59pm). Thinking this way, every second in a 24 hour period would refer to an exact point of Time during that   I used `seconds_since_midnight` to first turn each Time into a number 
 
 Thinking of time in seconds, and thinking of a range of time as a Set of consecutive seconds solved this. If you 
 
@@ -224,6 +224,17 @@ https://tosbourn.com/set-intersection-in-ruby/
 >Final version: timesheet.rb
 
 ![Calculate Amount](lib/assets/calculate_amount_final.png)
+
+### Managing Rates with RateSchema Class
+
+While completing the `calculate_timesheet_amount` meethod, I extracted the logic defining timesheet hourly rates into it's own Class, `RateSchema`.  to allow for flexibly managing different rates for different days .
+
+I wanted to functionality created so that new Rate Schema can be created as an instance of RateSchema class, and then assigned days of the week.  can be 
+
+.. Could also conceivably be assigned to days of the year / specific dates using additional control flow eg:
+```
+rate_schema = christmas_rate if christmas?
+```
 >RateSchema Class
 
 ![Calculate Amount](lib/assets/calculate_amount_method_final3.png)
@@ -258,17 +269,6 @@ The downside of this strategy is that any test will have to be completely rewrit
 ![Example Complex Test](lib/assets/example_complex_test.png)
 
 This is clearly not ideal, and I'm sure there must be better ways to do this while minimizing the chance for error.
-
-# Assumptions:
-
-- Timesheets always start and end on the same day.
-- '7am - 7pm' is inclusive, therefore a Monday timesheet starting at 7:00am and finishing at 7:00pm will include both the 7:00am minute and teh 7:00pm minute at the minimum rate
-- There is never more than two hourly rates in a day - one base rate, and one (optional) premium rate.
-- Time Zones are set to Melbourne for the purposes of this app.
-- The server will always be available, as will the internet connecction.
-- The New Timesheet Form will always result in a POST request that attempts to create a model with the expected datatypes, except in cases where a field may be left blank.
-- A user is authorized to view any endpoint and access any controller method.
-
 
 # Extending the Application
 

@@ -4,7 +4,7 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
+  justify-content: space-evenly;
 }
 
 #timesheet-table {
@@ -17,4 +17,5 @@
     padding: 3px 15px;
     font-size: 1.6rem
   }
+  margin-bottom: 2rem;
 }
