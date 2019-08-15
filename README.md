@@ -75,7 +75,7 @@ New salary schema can flexibly be created and assigned to specific days so that 
 ### Tech Stack & Framework
 Since the challenge specifically stated the application had to be written in Ruby the tech stack is Ruby, Embedded Ruby, HTML and CSS/SASS.
 
-I decided to create a Rails application rather than using Sinatra or something else. While Rails provides a lot of additional funcionality unnecessary for this project, it provides a solid platform for adding more functionality later, enforces MVC separation of concerns, and also syncs quite well with a Postgres database. 
+I decided to create a Rails application rather than using Sinatra or something else. While Rails provides a lot of additional functionality unnecessary for this project, it provides a solid platform for adding more functionality later, enforces MVC separation of concerns, and also syncs quite well with a Postgres database. 
 
 ### Architecture 
 I followed the Rails standard MVC Architecture. Modularized code separated into Models, Views and Controllers. 
@@ -99,9 +99,10 @@ There is only one Model, `Timesheet`, which is defined in the Models directory, 
 
 - Timesheets always start and end on the same day.
 - '7am - 7pm' is inclusive, therefore a Monday timesheet starting at 7:00am and finishing at 7:00pm will include both the 7:00am minute and teh 7:00pm minute at the minimum rate
-- There is never more than two hourly rates in a day - one base rate, and one (optional) premium rate.
+- There are never more than two hourly rates in a day - one base rate, and one (optional) premium rate.
+- This application doesn't account for irregular dates, for example leap years.
 - Time Zones are set to Melbourne for the purposes of this app.
-- The server will always be available, as will the internet connecction.
+- The server will always be available, as will the internet connection.
 - The New Timesheet Form will always result in a POST request that attempts to create a model with the expected datatypes, except in cases where a field may be left blank.
 - A user is authorized to view any endpoint and access any controller method.
 
@@ -109,17 +110,16 @@ There is only one Model, `Timesheet`, which is defined in the Models directory, 
 ## Coding style 
 
 I wrote this code with the assumption that the project would be extended, and someone should be able to read the code and understand what it does without needing to refer to documentation. To achieve this, I tried to follow the principles of good software development:
-- I used TDD methodology (red, orange, green) for about 70% of the project. I find this style very useful when creating features & functionality for classes and models, and helped me to identify and solve several bugs I didn't realised I had introduced until I wrote the tests that found them - Always a great feeling!
+- I used TDD methodology (red, orange, green) for about 70% of the project. I find this style very useful when creating features & functionality for classes and models, and helped me to identify and solve several bugs I didn't realise I had introduced until I wrote the tests that found them - Always a great feeling!
 - Descriptive variable and function naming (sometimes at the expense of Rubocop violations for reaching the line character limit 🤷‍). For this project I had difficulty solving all the Rubocop violations for line length and methods with too many branches. Typically these are a sign of code that can be improved, but in this case I felt that long method names were helpful in making the code easier to read, as I was struggling to think of variable names for all the different types of rates and the methods & variables that mutate them. I felt it was better in the end to be very descriptive.
-- DRY 
-- Methods should do only one thing, where possible - I attempted to extract individual pieces of logic into smaller methods
+- DRY code, "Don't Repeat Yourself"
+- Methods should be single purpose - I attempted to extract individual pieces of logic into smaller methods
 - Appropriate use of classes and modules to create an extra layer of logic and not let controllers / models get to 'heavy'
 - Separation of concerns
 - Providing a comprehensive testing suite to aid both refactoring and any additional extension to the codebase. Also to help describe the purpose of the code. 
 
-## Key Challenges & Decisions
+## Challenges & Solutions: Amount Calculation
 
-## Amount Calculation
 The Calculate Amount method needed to take a Timesheet and figure out how much salary had been earned for that particular time period. A Timesheet has a start time and and end time, and there are rules for each day that determine the hourly rate. 
 
 For example, the hourly rate on a Monday is $22/hour between 7am and 7pm, but $33 outside of that, so someone working 5am - 5pm on a Wednesday would get paid the base rate for 7am - 5pm, but the first two hours they would get the premium (overtime) rate. Mon, Wed, and Fri all have the same salary rate rules, but other days are different, so this code has to be able to determine what day it is, the rate schema for that day, etc etc. 
@@ -137,7 +137,7 @@ The reason this was challenging was the code had to not only calculate the amoun
 - understand what day the timesheet referred to
 - select the appropriate daily rate schema for that day
 - understand how much time was spent working during each particular rate for that day
-- add all the separate amounts together to get one daily rate
+- add all the separate amounts together to get one total daily amount
 
 Lastly, I wanted a mechanism that could be tweaked easily to allow for new schema to be introduced *on top of* the existing schema, allow for one-off events like public holidays etc to be introduced, and I wanted to avoid having to change variables in several different locations in the code whenever this happened.
 
@@ -210,6 +210,7 @@ The final version of my solution:
 - extracts the constant SECONDS_IN_AN_HOUR so that it can be used anywhere in the code (also used in tests)
 
 >Final Solution
+
 ![Calculate Amount](lib/assets/calculate_amount_final.png)
 
 >RateSchema Class
