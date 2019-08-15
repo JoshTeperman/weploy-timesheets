@@ -57,6 +57,8 @@ class Timesheet < ApplicationRecord
   end
 
   def select_rate_schema_for_timesheet
+    return RATE_SCHEMA['Christmas'] if date.day == 25 && date.month == 12
+
     day = ApplicationController.helpers.fetch_day(self)
     RATE_SCHEMA[day.to_sym]
   end
