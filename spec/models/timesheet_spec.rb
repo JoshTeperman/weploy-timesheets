@@ -2,7 +2,6 @@ require 'rails_helper'
 # require_relative '../../app/helpers/timesheets_helper'
 require_relative '../../lib/constants'
 require 'date'
-require 'pry'
 
 RSpec.describe Timesheet, type: :model do
   before do
