@@ -35,7 +35,7 @@ Once you've done that you should be able to run `rails s` to start the local ser
 
 To run the test suite and see if anything is failing run `bundle exec rspec` and you should see every test and a summary of the results of the tests. 
 
-To view a test-coverage summary of the coverage of the tests you can run `open coverage/index.html` from console which will open a tab in your default browser and display test coverage information.
+To view a test-coverage summary you can run `open coverage/index.html` from console which will open a tab in your default browser and display test coverage information.
 
 # App Description 
 Timesheet management application built in Ruby on Rails. 
