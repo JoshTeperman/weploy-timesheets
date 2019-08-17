@@ -28,6 +28,12 @@ weekend_schema = RateSchema.new(
   end_time: Time.zone.parse('23:59')
 )
 
+christmas_schema = RateSchema.new(
+  base_rate: 50.0,
+  start_time: Time.zone.parse('00:00'),
+  end_time: Time.zone.parse('11:59')
+)
+
 RATE_SCHEMA = {
   'Monday': mon_wed_fri_schema,
   'Tuesday': tues_thurs_schema,
@@ -35,5 +41,6 @@ RATE_SCHEMA = {
   'Thursday': tues_thurs_schema,
   'Friday': mon_wed_fri_schema,
   'Saturday': weekend_schema,
-  'Sunday': weekend_schema
+  'Sunday': weekend_schema,
+  'Christmas': christmas_schema
 }

@@ -2,7 +2,6 @@ require 'rails_helper'
 # require_relative '../../app/helpers/timesheets_helper'
 require_relative '../../lib/constants'
 require 'date'
-require 'pry'
 
 RSpec.describe Timesheet, type: :model do
   before do
@@ -202,7 +201,7 @@ RSpec.describe Timesheet, type: :model do
       end
     end
 
-    describe 'Tuesday Thursday' do
+    context 'Tuesday Thursday' do
       let(:min_rate) { 25.0 }
       let(:max_rate) { 35.0 }
       let(:min_rate_start) { Time.zone.parse('5:00') }
@@ -284,7 +283,7 @@ RSpec.describe Timesheet, type: :model do
       end
     end
 
-    describe 'Saturday Sunday' do
+    context 'When Saturday Sunday' do
       let(:rate) { 47.0 }
 
       it '00:01 to 23:59 on a Saturday' do
@@ -305,6 +304,24 @@ RSpec.describe Timesheet, type: :model do
         total_expected_amount = (total_seconds * rate) / SECONDS_IN_AN_HOUR
 
         expect(timesheet.amount).to eq(total_expected_amount)
+      end
+    end
+
+    context 'When Christmas' do
+      let(:christmas_timsheet) do
+        create(:timesheet, 
+          start_time: Time.zone.parse('09:00'),
+          end_time: Time.zone.parse('18:00'),
+          date: Date.new(2018, 12, 25)
+        )
+      end
+
+      it 'selects the correct schema' do
+        require 'pry';binding.pry
+        christmas_hourly_rate = 50.0
+        total_hours = 18 - 9
+        total_expected_amount = christmas_hourly_rate * total_hours
+        expect(christmas_timsheet.amount).to eq(total_expected_amount)
       end
     end
   end

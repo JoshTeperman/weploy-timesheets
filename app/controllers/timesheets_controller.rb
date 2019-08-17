@@ -24,6 +24,18 @@ class TimesheetsController < ApplicationController
     end
   end
 
+  def update
+    timesheet = Timesheet.find(params[:id])
+    timesheet.approval_date = Date.current
+    success = timesheet.save
+    if success
+      flash[:success] = 'Updated Timesheet'
+    else
+      flash[:errors] = timesheet.errors.full_messages
+    end
+    # binding.pry
+  end
+
   private
 
   def parse_date
