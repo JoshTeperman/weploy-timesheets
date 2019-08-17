@@ -3,13 +3,18 @@ require_relative '../../lib/rate_schema'
 require_relative '../../lib/constants'
 
 class Timesheet < ApplicationRecord
-  validates :date, :start_time, :end_time, presence: true
-  validate :start_time_cannot_be_after_end_time
-  validate :date_cannot_be_in_the_future
-  validate :time_sheet_cannot_overlap
+  validates :date, :start_time, :end_time, presence: true, on: :create
+  validate :start_time_cannot_be_after_end_time, on: :create
+  validate :date_cannot_be_in_the_future, on: :create
+  validate :time_sheet_cannot_overlap, on: :create
+  validate :timesheet_not_already_approved
   before_create :calculate_timesheet_amount
 
   private
+
+  def timesheet_not_already_approved
+    # timesheet.approval_date.nil?
+  end
 
   def start_time_cannot_be_after_end_time
     return unless start_time.present? && end_time.present?
